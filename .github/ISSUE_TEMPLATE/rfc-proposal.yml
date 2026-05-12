@@ -1,0 +1,97 @@
+name: RFC Proposal
+description: Submit a Request for Comments proposal for protocol evolution or significant changes
+title: "[RFC]: "
+labels: ["rfc", "status: triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        RFCs are used to propose significant changes to the Telepathy Protocol, its schema, or its ecosystem.
+        Please provide as much detail as possible so the community can evaluate your proposal.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Proposal Summary
+      description: A brief summary of the proposed change (2-3 sentences).
+      placeholder: Summarize the proposal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change needed? What problem does it solve or what opportunity does it create?
+      placeholder: Explain the motivation behind this proposal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: detailed-design
+    attributes:
+      label: Detailed Design
+      description: |
+        Describe the proposed design in detail. Include:
+        - New or modified data structures (MessageEnvelope, Intent, etc.)
+        - Behavioral changes
+        - API surface changes
+        - Example messages or code snippets
+      placeholder: Provide the detailed technical design.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected Area
+      description: Which part of the project does this RFC affect?
+      options:
+        - Protocol Specification
+        - Schema (JSON/TS/MDX)
+        - TypeScript SDK
+        - Transport Bridges
+        - Security / Privacy
+        - Shared Context
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: backward-compatibility
+    attributes:
+      label: Backward Compatibility Impact
+      description: |
+        How does this proposal affect backward compatibility?
+        - Does it introduce breaking changes to existing schema or APIs?
+        - If breaking, what migration path do you propose?
+        - What is the impact on existing implementations?
+      placeholder: Describe the backward compatibility impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches did you consider and why were they rejected?
+      placeholder: Describe alternative approaches.
+    validations:
+      required: false
+
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open Questions
+      description: List any unresolved questions or areas where you'd like community input.
+      placeholder: List open questions.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any references, related issues, or prior art that supports this proposal.
+    validations:
+      required: false
