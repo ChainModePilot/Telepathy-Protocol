@@ -99,9 +99,9 @@ Teilbare kognitive Ressourcen umfassen:
 | Regeln oder Reasoning-Engines | Reasoning-Logik für die aktuelle Aufgabe | Juristischer Fay teilt anwendbare Rechtsvorschriften und Reasoning-Ketten — der Steuer-Fay kann diese Vorschriften direkt referenzieren, um steuerliche Auswirkungen zu berechnen, ohne dass der juristische Fay jedes Mal relevante Gesetze in Nachrichten kopieren und einfügen muss |
 | Umgebungskontext | Dynamische Informationen wie Zeit, Ort, Gerätezustand | Fay auf einer Drohne teilt GPS-Echtzeitkoordinaten, Batteriestand und Kamerawinkel mit dem Bodenkontroll-Fay — der Boden-Fay kann den Zustand der Drohne direkt „wahrnehmen", anstatt auf periodische Statusberichtsnachrichten zu warten |
 
-#### Host-Autorisierung und Auditierung
+#### Human Prime-Autorisierung und Auditierung
 
-Der Umfang des Shared Context wird strikt durch die **Host-Autorisierung** bestimmt. Ein Fay kann nicht einseitig entscheiden, welche kognitiven Ressourcen geteilt werden — jede Teilungsaktion muss innerhalb der vom Host vorab autorisierten Grenzen erfolgen. Zusätzlich ist jeder Zugriff auf den Shared Context **auditierbar**, sodass der Host im Nachhinein überprüfen kann, welche Informationen geteilt wurden, von wem sie abgerufen wurden und zu welchem Zeitpunkt.
+Der Umfang des Shared Context wird strikt durch die **Human Prime-Autorisierung** bestimmt. Ein Fay kann nicht einseitig entscheiden, welche kognitiven Ressourcen geteilt werden — jede Teilungsaktion muss innerhalb der vom Human Prime vorab autorisierten Grenzen erfolgen. Zusätzlich ist jeder Zugriff auf den Shared Context **auditierbar**, sodass der Human Prime im Nachhinein überprüfen kann, welche Informationen geteilt wurden, von wem sie abgerufen wurden und zu welchem Zeitpunkt.
 
 Dieses Design bildet einen scharfen Kontrast zu A2As Opaque-Execution-Prinzip:
 
@@ -110,7 +110,7 @@ Dieses Design bildet einen scharfen Kontrast zu A2As Opaque-Execution-Prinzip:
 | Interner Zustand | Nicht geteilt; Agent ist eine Black Box | Selektiv geteilt im autorisierten Rahmen |
 | Zusammenarbeitstiefe | Aufgabenebene (Delegation und Berichterstattung) | Kognitive Ebene (geteiltes Gedächtnis und Reasoning) |
 | Informationsübertragung | Jedes Mal vollständige Serialisierung | Direkter Zugriff im geteilten Raum |
-| Datenschutzkontrolle | Kein systematischer Mechanismus | Host-Autorisierung + vollständige Auditierung |
+| Datenschutzkontrolle | Kein systematischer Mechanismus | Human Prime-Autorisierung + vollständige Auditierung |
 | Anwendbare Szenarien | Lose gekoppelte Service-Orchestrierung | Tiefe Zusammenarbeit und kognitive Fusion |
 
 Shared Context hebt die Zusammenarbeit zwischen Fays von „Nachrichten weiterleiten" auf „gemeinsam denken" — dies ist der Kernwert von TP als kognitives Teilungsprotokoll.

@@ -67,22 +67,22 @@ In MCP's world, a tool is a stateless function — it doesn't matter who calls i
 
 This assumption is reasonable in technical service scenarios. But when AI Agents begin acting on behalf of real humans, this assumption no longer holds.
 
-#### The iFay Worldview: Every Fay Has a Host
+#### The iFay Worldview: Every Fay Has a Human Prime
 
-In the iFay system, the worldview is fundamentally different. Every Fay — whether an iFay representing an individual or a coFay serving a public social function — has a clearly defined **Host**. A Fay acts on behalf of its Host, safeguards the Host's interests, and protects the Host's privacy.
+In the iFay system, the worldview is fundamentally different. Every Fay — whether an iFay representing an individual or a coFay serving a public social function — has a clearly defined **Human Prime**. A Fay acts on behalf of its Human Prime, safeguards the Human Prime's interests, and protects the Human Prime's privacy.
 
-This means that when two Fays communicate, what is fundamentally occurring is not a data exchange between two software services, but rather **a negotiation between two delegates acting on behalf of their respective Hosts** — much like lawyers negotiating on behalf of their clients, or secretaries coordinating affairs on behalf of their executives.
+This means that when two Fays communicate, what is fundamentally occurring is not a data exchange between two software services, but rather **a negotiation between two delegates acting on behalf of their respective Human Primes** — much like lawyers negotiating on behalf of their clients, or secretaries coordinating affairs on behalf of their executives.
 
 ```mermaid
 graph LR
-    subgraph "Host A's Domain"
-        HA["Host A (Natural Person)"]
+    subgraph "Human Prime A's Domain"
+        HA["Human Prime A (Natural Person)"]
         FA["iFay A"]
         HA -.->|"Authorization & Delegation"| FA
     end
 
-    subgraph "Host B's Domain"
-        HB["Host B (Natural Person)"]
+    subgraph "Human Prime B's Domain"
+        HB["Human Prime B (Natural Person)"]
         FB["iFay B"]
         HB -.->|"Authorization & Delegation"| FB
     end
@@ -98,9 +98,9 @@ graph LR
 This "delegate negotiation" paradigm imposes entirely new requirements on communication protocols:
 
 - **Identity Attribution**: The protocol must clearly identify whom each communicating entity represents. For example, when a Fay books an appointment with a hospital's coFay on behalf of a patient, the hospital coFay needs to confirm that "this Fay is indeed authorized by the patient to make the appointment," rather than allowing anyone to impersonate the patient's Fay.
-- **Trust Boundaries**: Information sharing between delegates must occur within the scope authorized by their Hosts. For example, a patient authorizes their Fay to share allergy history and current symptoms with the hospital, but does not allow sharing of psychological counseling records — the Fay must strictly respect this boundary.
-- **Privacy Protection**: Hosts' sensitive data must be encrypted during transmission, with support for selective disclosure. For example, during an insurance claim, only the diagnosis code and cost breakdown need to be disclosed, without exposing the complete medical records.
-- **Auditability**: All delegate actions must be traceable, enabling Hosts to review them after the fact. For example, a Host can review "which Fays my Fay shared data with over the past week, and what data was shared" — just like reviewing a bank account's transaction history.
+- **Trust Boundaries**: Information sharing between delegates must occur within the scope authorized by their Human Primes. For example, a patient authorizes their Fay to share allergy history and current symptoms with the hospital, but does not allow sharing of psychological counseling records — the Fay must strictly respect this boundary.
+- **Privacy Protection**: Human Primes' sensitive data must be encrypted during transmission, with support for selective disclosure. For example, during an insurance claim, only the diagnosis code and cost breakdown need to be disclosed, without exposing the complete medical records.
+- **Auditability**: All delegate actions must be traceable, enabling Human Primes to review them after the fact. For example, a Human Prime can review "which Fays my Fay shared data with over the past week, and what data was shared" — just like reviewing a bank account's transaction history.
 
 ### 1.3 Blind Spots of Existing Protocols
 
@@ -114,7 +114,7 @@ Neither MCP nor A2A concerns itself with whom an Agent represents. Tools in MCP 
 
 #### No Privacy Protection
 
-Existing protocols lack systematic protection mechanisms for Host privacy data. MCP's tool calls transmit parameters in plaintext; A2A's Messages likewise provide no end-to-end encryption or selective disclosure capabilities. When Agents need to transmit health records, financial data, or identity credentials on behalf of their Hosts, existing protocols cannot provide adequate security guarantees.
+Existing protocols lack systematic protection mechanisms for Human Prime privacy data. MCP's tool calls transmit parameters in plaintext; A2A's Messages likewise provide no end-to-end encryption or selective disclosure capabilities. When Agents need to transmit health records, financial data, or identity credentials on behalf of their Human Primes, existing protocols cannot provide adequate security guarantees.
 
 > **Real-world example**: A job seeker's Fay submits a resume to a recruiting company's coFay. The job seeker only wants to disclose work experience and skills, but does not want to expose their current salary and home address. Under A2A, the choice is either to send everything (privacy breach) or send nothing (unable to complete the job application). There is no mechanism for "only letting the other party see what I allow them to see."
 

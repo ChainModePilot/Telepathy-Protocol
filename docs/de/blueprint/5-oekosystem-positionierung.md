@@ -35,7 +35,7 @@ graph TB
         DTP["DTP<br/>Datenkanal"]
     end
 
-    HUMAN["Natürliche Person (Host)"]
+    HUMAN["Natürliche Person (Human Prime)"]
     FAY["Fay"]
     COFAY["coFay"]
     HW["Hardware / OS / Client"]
@@ -57,9 +57,9 @@ graph TB
 
 **Inter-Protokoll-Zusammenarbeitsbeziehungen:**
 
-- **FP → TP**: FP etabliert die Identitätsbindungsbeziehung zwischen Host und Fay; TP referenziert die FP-Autorisierung während der Kommunikation, um die Legitimität der Host-Delegation zu verifizieren. Wenn beispielsweise der iFay eines Patienten eine Terminanfrage an einen Krankenhaus-coFay initiiert, bestätigt der Krankenhaus-coFay über die FP-Autorisierungsreferenz, dass „dieser iFay tatsächlich vom Patienten autorisiert ist, den Termin zu vereinbaren."
-- **ICP → TP**: Der Host erteilt seinem Fay Anweisungen über ICP; der Fay delegiert Aufgaben über TP an andere Fays zur Ausführung. Beispielsweise sagt ein Benutzer seinem iFay „buche mir nächste Woche einen Flug nach Tokio" (ICP-Interaktion), und der iFay kontaktiert dann den coFay der Fluggesellschaft über TP, um die Buchung abzuschließen.
-- **SSP ↔ TP**: Ein Fay entdeckt über SSP die verfügbaren Skills anderer Fays und initiiert dann über TP spezifische Zusammenarbeitsanfragen. Beispielsweise entdeckt ein iFay über SSP einen auf Steuerplanung spezialisierten coFay und etabliert dann über TP einen geteilten Kontext, wobei die Finanzdaten des Hosts (im autorisierten Rahmen) in den geteilten Raum eingebunden werden.
+- **FP → TP**: FP etabliert die Identitätsbindungsbeziehung zwischen Human Prime und Fay; TP referenziert die FP-Autorisierung während der Kommunikation, um die Legitimität der Human Prime-Delegation zu verifizieren. Wenn beispielsweise der iFay eines Patienten eine Terminanfrage an einen Krankenhaus-coFay initiiert, bestätigt der Krankenhaus-coFay über die FP-Autorisierungsreferenz, dass „dieser iFay tatsächlich vom Patienten autorisiert ist, den Termin zu vereinbaren."
+- **ICP → TP**: Der Human Prime erteilt seinem Fay Anweisungen über ICP; der Fay delegiert Aufgaben über TP an andere Fays zur Ausführung. Beispielsweise sagt ein Benutzer seinem iFay „buche mir nächste Woche einen Flug nach Tokio" (ICP-Interaktion), und der iFay kontaktiert dann den coFay der Fluggesellschaft über TP, um die Buchung abzuschließen.
+- **SSP ↔ TP**: Ein Fay entdeckt über SSP die verfügbaren Skills anderer Fays und initiiert dann über TP spezifische Zusammenarbeitsanfragen. Beispielsweise entdeckt ein iFay über SSP einen auf Steuerplanung spezialisierten coFay und etabliert dann über TP einen geteilten Kontext, wobei die Finanzdaten des Human Prime (im autorisierten Rahmen) in den geteilten Raum eingebunden werden.
 - **TP → CAP**: Wenn eine TP-Zusammenarbeitsaufgabe die Steuerung von Hardware oder Clients erfordert, erhält der Fay die Gerätesteuerungsberechtigung über CAP-Credentials. Beispielsweise muss eine manuell gesteuerte Drohne an einen Fay zur Übernahme übergeben werden — der iFay des Bodenoperators verhandelt die Steuerungsübergabe mit dem Fay auf der Drohne über TP und schließt dann die tatsächliche Steuerungsübertragung über das CAP-Protokoll ab.
 - **DTP → TP**: Hardware und Betriebssysteme senden Umgebungsdaten über DTP an Fays; Fays integrieren diese Daten in den TP-Shared-Context für die Nutzung durch zusammenarbeitende Parteien. Beispielsweise sendet ein Smart-Home-System Innentemperatur, Luftfeuchtigkeit und Luftqualitätsdaten über DTP an den iFay, und der iFay bindet diese Umgebungsdaten in den geteilten Kontext mit einem Gesundheitsmanagement-coFay ein, um bei der Erstellung von Gesundheitsempfehlungen zu helfen.
 
@@ -74,8 +74,8 @@ TP und MCP/A2A stehen nicht in Konkurrenz, sondern sind komplementär — TP kan
 | **Erscheinungsjahr** | 2024 | 2025 | 2025 |
 | **Kernpositionierung** | Verbindungsprotokoll zwischen AI-Modellen und externen Tools | Aufgabendelegations- und Zusammenarbeitsprotokoll zwischen Agents | Kognitives Teilungsprotokoll zwischen Fays |
 | **Kommunikationsrichtung** | Unidirektional (AI → Tools) | Bidirektional (Agent ↔ Agent) | Bidirektional + Geteilter Raum (Fay ↔ Shared Context ↔ Fay) |
-| **Identitätszuordnung** | Keine (Tools haben kein Zuordnungskonzept) | Keine (Agents sind autonome Dienstknoten) | Ja (jeder Fay handelt im Namen eines Hosts) |
-| **Datenschutz** | Kein systematischer Mechanismus (Klartext-Parameterübergabe) | Kein systematischer Mechanismus | Ende-zu-Ende-Verschlüsselung + Selektive Offenlegung + Host-Autorisierung |
+| **Identitätszuordnung** | Keine (Tools haben kein Zuordnungskonzept) | Keine (Agents sind autonome Dienstknoten) | Ja (jeder Fay handelt im Namen eines Human Prime) |
+| **Datenschutz** | Kein systematischer Mechanismus (Klartext-Parameterübergabe) | Kein systematischer Mechanismus | Ende-zu-Ende-Verschlüsselung + Selektive Offenlegung + Human Prime-Autorisierung |
 | **Interner Zustandsaustausch** | Nicht anwendbar (Tools sind zustandslose Funktionen) | Nicht geteilt (Opaque Execution) | Selektiv geteilt im autorisierten Rahmen (Shared Context) |
 | **Transportmethode** | Gebunden an Tool Call (JSON-RPC) | Gebunden an JSON-RPC über HTTP | Transportagnostisch (lieferbar via A2A/MCP/API/Prompt) |
 | **Protokollverhandlung** | Keine | Keine | Adaptive Verhandlung und Übersetzung |

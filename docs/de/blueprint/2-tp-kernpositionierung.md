@@ -57,7 +57,7 @@ Aber wenn beide Parteien „Telepathie" besäßen, wäre die Situation völlig a
 
 Unter Menschen ist „Telepathie" ein Science-Fiction-Konzept. Aber in Fay-zu-Fay-Szenarien ist dieser geteilte Kontext **technisch realisierbar**.
 
-Der kognitive Zustand eines Fay ist grundlegend strukturierte Daten — Speicher ist ein indizierbarer Wissensgraph, Ansichten sind serialisierbare Zustandsbäume, und Reasoning-Regeln sind teilbare Logik-Engines. Wenn zwei Fays eine TP-Sitzung etablieren, können sie im Rahmen der Host-Autorisierung Teile ihrer kognitiven Ressourcen in einen geteilten Raum einbringen:
+Der kognitive Zustand eines Fay ist grundlegend strukturierte Daten — Speicher ist ein indizierbarer Wissensgraph, Ansichten sind serialisierbare Zustandsbäume, und Reasoning-Regeln sind teilbare Logik-Engines. Wenn zwei Fays eine TP-Sitzung etablieren, können sie im Rahmen der Human Prime-Autorisierung Teile ihrer kognitiven Ressourcen in einen geteilten Raum einbringen:
 
 - **Sitzungsebene partielles Langzeitgedächtnis**: Wissensfragmente, die für das aktuelle Zusammenarbeitsthema relevant sind
 - **Ansichts-Schnittstellenzustand**: Echtzeitzustand der Schnittstelle oder Datenansichten, die beide Parteien bedienen

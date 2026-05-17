@@ -67,22 +67,22 @@ En el mundo de MCP, una herramienta es una función sin estado — no importa qu
 
 Esta suposición es razonable en escenarios de servicios técnicos. Pero cuando los AI Agents comienzan a actuar en nombre de humanos reales, esta suposición ya no se sostiene.
 
-#### La visión del mundo iFay: Cada Fay tiene un Host
+#### La visión del mundo iFay: Cada Fay tiene un Human Prime
 
-En el sistema iFay, la visión del mundo es fundamentalmente diferente. Cada Fay — ya sea un iFay que representa a un individuo o un coFay que sirve una función social pública — tiene un **Host** claramente definido. Un Fay actúa en nombre de su Host, salvaguarda los intereses del Host y protege la privacidad del Host.
+En el sistema iFay, la visión del mundo es fundamentalmente diferente. Cada Fay — ya sea un iFay que representa a un individuo o un coFay que sirve una función social pública — tiene un **Human Prime** claramente definido. Un Fay actúa en nombre de su Human Prime, salvaguarda los intereses del Human Prime y protege la privacidad del Human Prime.
 
-Esto significa que cuando dos Fays se comunican, lo que ocurre fundamentalmente no es un intercambio de datos entre dos servicios de software, sino más bien **una negociación entre dos delegados que actúan en nombre de sus respectivos Hosts** — muy similar a abogados negociando en nombre de sus clientes, o secretarios coordinando asuntos en nombre de sus ejecutivos.
+Esto significa que cuando dos Fays se comunican, lo que ocurre fundamentalmente no es un intercambio de datos entre dos servicios de software, sino más bien **una negociación entre dos delegados que actúan en nombre de sus respectivos Human Primes** — muy similar a abogados negociando en nombre de sus clientes, o secretarios coordinando asuntos en nombre de sus ejecutivos.
 
 ```mermaid
 graph LR
-    subgraph "Dominio del Host A"
-        HA["Host A (Persona natural)"]
+    subgraph "Dominio del Human Prime A"
+        HA["Human Prime A (Persona natural)"]
         FA["iFay A"]
         HA -.->|"Autorización y Delegación"| FA
     end
 
-    subgraph "Dominio del Host B"
-        HB["Host B (Persona natural)"]
+    subgraph "Dominio del Human Prime B"
+        HB["Human Prime B (Persona natural)"]
         FB["iFay B"]
         HB -.->|"Autorización y Delegación"| FB
     end
@@ -98,9 +98,9 @@ graph LR
 Este paradigma de "negociación entre delegados" impone requisitos completamente nuevos a los protocolos de comunicación:
 
 - **Atribución de identidad**: El protocolo debe identificar claramente a quién representa cada entidad comunicante. Por ejemplo, cuando un Fay reserva una cita con un coFay de hospital en nombre de un paciente, el coFay del hospital necesita confirmar que "este Fay está efectivamente autorizado por el paciente para hacer la cita", en lugar de permitir que cualquiera suplante al Fay del paciente.
-- **Fronteras de confianza**: El intercambio de información entre delegados debe ocurrir dentro del alcance autorizado por sus Hosts. Por ejemplo, un paciente autoriza a su Fay a compartir el historial de alergias y los síntomas actuales con el hospital, pero no permite compartir registros de asesoramiento psicológico — el Fay debe respetar estrictamente esta frontera.
-- **Protección de privacidad**: Los datos sensibles de los Hosts deben estar cifrados durante la transmisión, con soporte para divulgación selectiva. Por ejemplo, durante una reclamación de seguro, solo el código de diagnóstico y el desglose de costos necesitan ser divulgados, sin exponer los registros médicos completos.
-- **Auditabilidad**: Todas las acciones de los delegados deben ser rastreables, permitiendo a los Hosts revisarlas después del hecho. Por ejemplo, un Host puede revisar "con qué Fays compartió datos mi Fay durante la última semana, y qué datos se compartieron" — igual que revisar el historial de transacciones de una cuenta bancaria.
+- **Fronteras de confianza**: El intercambio de información entre delegados debe ocurrir dentro del alcance autorizado por sus Human Primes. Por ejemplo, un paciente autoriza a su Fay a compartir el historial de alergias y los síntomas actuales con el hospital, pero no permite compartir registros de asesoramiento psicológico — el Fay debe respetar estrictamente esta frontera.
+- **Protección de privacidad**: Los datos sensibles de los Human Primes deben estar cifrados durante la transmisión, con soporte para divulgación selectiva. Por ejemplo, durante una reclamación de seguro, solo el código de diagnóstico y el desglose de costos necesitan ser divulgados, sin exponer los registros médicos completos.
+- **Auditabilidad**: Todas las acciones de los delegados deben ser rastreables, permitiendo a los Human Primes revisarlas después del hecho. Por ejemplo, un Human Prime puede revisar "con qué Fays compartió datos mi Fay durante la última semana, y qué datos se compartieron" — igual que revisar el historial de transacciones de una cuenta bancaria.
 
 ### 1.3 Puntos ciegos de los protocolos existentes
 
@@ -114,7 +114,7 @@ Ni MCP ni A2A se preocupa por a quién representa un Agent. Las herramientas en 
 
 #### Sin protección de privacidad
 
-Los protocolos existentes carecen de mecanismos de protección sistemáticos para los datos de privacidad del Host. Las llamadas de herramientas de MCP transmiten parámetros en texto plano; los Messages de A2A tampoco proporcionan cifrado de extremo a extremo ni capacidades de divulgación selectiva. Cuando los Agents necesitan transmitir registros de salud, datos financieros o credenciales de identidad en nombre de sus Hosts, los protocolos existentes no pueden proporcionar garantías de seguridad adecuadas.
+Los protocolos existentes carecen de mecanismos de protección sistemáticos para los datos de privacidad del Human Prime. Las llamadas de herramientas de MCP transmiten parámetros en texto plano; los Messages de A2A tampoco proporcionan cifrado de extremo a extremo ni capacidades de divulgación selectiva. Cuando los Agents necesitan transmitir registros de salud, datos financieros o credenciales de identidad en nombre de sus Human Primes, los protocolos existentes no pueden proporcionar garantías de seguridad adecuadas.
 
 > **Ejemplo práctico**: El Fay de un buscador de empleo envía un currículum al coFay de una empresa de reclutamiento. El buscador de empleo solo quiere divulgar experiencia laboral y habilidades, pero no quiere exponer su salario actual y dirección de domicilio. Bajo A2A, la elección es enviar todo (violación de privacidad) o no enviar nada (imposible completar la solicitud de empleo). No existe ningún mecanismo para "solo dejar que la otra parte vea lo que yo permito".
 

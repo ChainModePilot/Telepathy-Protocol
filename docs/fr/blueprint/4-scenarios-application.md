@@ -4,21 +4,21 @@ Les cinq scénarios suivants démontrent les applications pratiques de TP dans d
 
 ### 4.1 Consultation avec délégation de vie privée
 
-**Scénario** : Un Host patient a besoin que son Fay médical soumette des données de santé à un coFay d'assurance pour obtenir une évaluation de sinistre.
+**Scénario** : Un Human Prime patient a besoin que son Fay médical soumette des données de santé à un coFay d'assurance pour obtenir une évaluation de sinistre.
 
 Sous les modèles de communication Agent traditionnels, l'Agent médical devrait sérialiser les dossiers de santé complets du patient dans un message et l'envoyer à l'Agent d'assurance — ce qui signifie que toutes les données sont transmises en clair sur le réseau, et le récepteur obtient accès à des informations bien au-delà de ce qui est nécessaire.
 
 Sous le modèle de partage cognitif de TP, le processus est fondamentalement différent :
 
-1. **Autorisation du Host** : Le Host patient autorise le Fay médical via le protocole FP, spécifiant explicitement que seules les informations de diagnostic pertinentes pour ce sinistre peuvent être divulguées (comme les codes de diagnostic, dates de traitement, ventilations de coûts), tandis que les autres dossiers de santé (comme les dossiers de consultation psychologique, résultats de tests génétiques) restent chiffrés et invisibles
+1. **Autorisation du Human Prime** : Le Human Prime patient autorise le Fay médical via le protocole FP, spécifiant explicitement que seules les informations de diagnostic pertinentes pour ce sinistre peuvent être divulguées (comme les codes de diagnostic, dates de traitement, ventilations de coûts), tandis que les autres dossiers de santé (comme les dossiers de consultation psychologique, résultats de tests génétiques) restent chiffrés et invisibles
 2. **Divulgation sélective** : Le Fay médical utilise le mécanisme `SelectiveDisclosure` de TP pour transmettre les données autorisées sous forme chiffrée au coFay d'assurance, accompagnées d'un `CallbackCredential` à durée limitée
 3. **Accès contrôlé** : Le coFay d'assurance accède aux données autorisées dans un périmètre limité via le callback credential, complétant l'évaluation du sinistre
 4. **Expiration automatique** : Après la fin de l'évaluation, le callback credential expire automatiquement, et le coFay d'assurance ne peut plus accéder à aucune donnée patient
-5. **Audit complet** : Tous les enregistrements d'accès aux données sont consignés dans la piste d'audit, et le Host patient peut les consulter à tout moment
+5. **Audit complet** : Tous les enregistrements d'accès aux données sont consignés dans la piste d'audit, et le Human Prime patient peut les consulter à tout moment
 
 ```mermaid
 sequenceDiagram
-    participant H as Host Patient
+    participant H as Human Prime Patient
     participant MF as Fay Médical
     participant IF as coFay Assurance
 
@@ -29,10 +29,10 @@ sequenceDiagram
     IF->>IF: Compléter l'évaluation du sinistre
     IF->>MF: Retourner le résultat d'évaluation
     Note over IF: Credential expire automatiquement, accès aux données terminé
-    Note over H: Le Host peut auditer tous les enregistrements d'accès
+    Note over H: Le Human Prime peut auditer tous les enregistrements d'accès
 ```
 
-Ce scénario incarne le principe de **souveraineté du Host sur la vie privée** de TP — la portée de la divulgation des données est toujours déterminée par le Host, pas par le jugement propre du Fay.
+Ce scénario incarne le principe de **souveraineté du Human Prime sur la vie privée** de TP — la portée de la divulgation des données est toujours déterminée par le Human Prime, pas par le jugement propre du Fay.
 
 
 ### 4.2 Traduction inter-protocoles
@@ -68,22 +68,22 @@ La valeur clé de ce scénario est : **les différences de protocole sont compl�
 
 ### 4.3 Consultation avec transmission de credentials
 
-**Scénario** : Un Fay juridique (représentant un Host client) initie une consultation avec un coFay fiscal, ayant besoin d'obtenir les dossiers fiscaux du client pour soutenir la préparation du litige.
+**Scénario** : Un Fay juridique (représentant un Human Prime client) initie une consultation avec un coFay fiscal, ayant besoin d'obtenir les dossiers fiscaux du client pour soutenir la préparation du litige.
 
 Ce scénario est analogue à une situation réelle où un avocat demande des documents à une autorité fiscale au nom d'un client — l'avocat doit présenter la procuration du client, l'autorité fiscale fournit des documents dans un périmètre limité après vérification de l'autorisation, et l'ensemble du processus est documenté.
 
 Le mode consultation (Consultation) et le mécanisme de callback credential (CallbackCredential) de TP reproduisent précisément ce processus réel :
 
-1. **Délégation du Host** : Le Host client autorise le Fay juridique via le protocole FP, lui permettant d'obtenir des dossiers fiscaux en son nom
+1. **Délégation du Human Prime** : Le Human Prime client autorise le Fay juridique via le protocole FP, lui permettant d'obtenir des dossiers fiscaux en son nom
 2. **Initiation de la consultation** : Le Fay juridique envoie une `ConsultationRequest` au coFay fiscal, accompagnée d'un `CallbackCredential` à durée limitée qui autorise le coFay fiscal à accéder aux données financières du client dans un périmètre limité
 3. **Vérification du credential** : Le coFay fiscal vérifie la validité du callback credential — vérifiant l'identité de l'émetteur, le périmètre d'autorisation et la période de validité
 4. **Récupération contrôlée des données** : Le coFay fiscal accède aux dossiers fiscaux du client via le credential, mais uniquement dans les années et types d'impôts spécifiés dans le `scope` du credential
 5. **Chiffrement de bout en bout** : L'ensemble du processus de transmission de données utilise le mécanisme `EncryptedPayload` de TP pour le chiffrement de bout en bout
-6. **Piste d'audit** : Tous les enregistrements d'utilisation de credentials et d'accès aux données sont écrits dans le journal d'audit, et le Host client peut les consulter à tout moment
+6. **Piste d'audit** : Tous les enregistrements d'utilisation de credentials et d'accès aux données sont écrits dans le journal d'audit, et le Human Prime client peut les consulter à tout moment
 
 ```mermaid
 sequenceDiagram
-    participant C as Host Client
+    participant C as Human Prime Client
     participant LF as Fay Juridique
     participant TF as coFay Fiscal
 
@@ -96,7 +96,7 @@ sequenceDiagram
     Note over C: Piste d'audit complète traçable
 ```
 
-Ce scénario démontre comment TP numérise le modèle réel de « un délégué effectuant des démarches avec une procuration » — les credentials sont à durée limitée, à périmètre défini, révocables et auditables, protégeant pleinement les intérêts du Host.
+Ce scénario démontre comment TP numérise le modèle réel de « un délégué effectuant des démarches avec une procuration » — les credentials sont à durée limitée, à périmètre défini, révocables et auditables, protégeant pleinement les intérêts du Human Prime.
 
 
 ### 4.4 Tâche collaborative multi-Fay

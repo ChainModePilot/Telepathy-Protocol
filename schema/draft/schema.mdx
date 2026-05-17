@@ -1,0 +1,770 @@
+# Telepathy Protocol Schema (Draft)
+
+> Human-readable documentation for the Telepathy Protocol (TP) data structures.
+> This document corresponds 1-to-1 with `schema.json` (JSON Schema) and `schema.ts` (TypeScript types) in this directory.
+>
+> **Change annotations** relative to the previous version (2025-10-25):
+> - **[NEW]** — Type introduced in this draft
+> - **[CHANGED]** — Type existed before but has been modified
+> - **[RETAINED]** — Type carried over unchanged from the previous version
+
+---
+
+## 1. Identity Recognition Layer
+
+The Identity Recognition Layer answers: *"Who are you? Whom do you represent?"*
+It establishes trust through Fay identity, DID-based verification, and Host authorization boundaries.
+
+---
+
+### FayIdentity [NEW]
+
+Identifies a Fay participant in TP communication. Replaces the previous `FayIdentifier` with the addition of DID-based cryptographic verification. Every message sender and receiver is represented by this structure.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `fay_id` | `string` | Yes | Globally unique Fay identifier. |
+| `fay_type` | `"iFay" \| "coFay"` | Yes | Fay type: iFay (individual) or coFay (public-service). |
+| `host_id` | `string` | No* | Host identifier. *MUST be present when `fay_type` is `"iFay"`. |
+| `did` | `DIDIdentifier` | Yes | DID identifier for cryptographic verification. |
+
+---
+
+### DIDIdentifier [NEW]
+
+Decentralized Identifier reference with a layered verification scheme.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `method` | `"did:key" \| "did:web" \| "did:chain"` | Yes | DID method (layered: key → web → chain). |
+| `value` | `string` | Yes | The DID value. |
+| `proof` | `DIDProof` | Yes | Cryptographic proof of DID ownership. |
+
+#### DID Method Tiers
+
+| Method | Use Case | Trust Level |
+|--------|----------|-------------|
+| `did:key` | Session-level ephemeral identity, offline-capable | Low |
+| `did:web` | Standard online verification via well-known endpoints | Medium |
+| `did:chain` | High-security scenarios requiring immutable audit trails | High |
+
+---
+
+### DIDProof [NEW]
+
+Cryptographic proof attached to a DID, used to verify identity ownership.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | `"Ed25519Signature2020" \| "EcdsaSecp256k1Signature2019"` | Yes | Signature suite type. |
+| `created` | `string` (ISO 8601) | Yes | Timestamp when the proof was created. |
+| `verification_method` | `string` | Yes | URI of the verification method. |
+| `proof_value` | `string` | Yes | Base64-encoded signature value. |
+
+---
+
+### FayProfile [NEW]
+
+The "business card" exchanged during TP session establishment. Describes identity, capabilities, sharing willingness, operational status, and Host authorization boundaries.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `identity` | `FayIdentity` | Yes | Identity reference. |
+| `capabilities` | `CapabilityDescriptor[]` | Yes | List of capability descriptors. |
+| `sharing_willingness` | `SharingWillingness` | Yes | What cognitive resources this Fay is willing to share. |
+| `status` | `FayStatus` | Yes | Current operational status. |
+| `host_authorization` | `HostAuthorization` | Yes | Host authorization boundaries. |
+| `conformance_level` | `"tp_core" \| "tp_secure" \| "tp_full"` | No | Declared conformance level. |
+| `json_ld_context` | `string` | No | Optional JSON-LD semantic annotation URI. |
+
+---
+
+### CapabilityDescriptor [NEW]
+
+Describes a single capability a Fay can provide. Used within `FayProfile` for discovery and matching.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `capability_id` | `string` | Yes | Unique capability identifier. |
+| `name` | `string` | Yes | Human-readable capability name. |
+| `version` | `string` (semver) | Yes | Capability version (semver). |
+| `input_schema` | `JSONSchema` | Yes | JSON Schema for input parameters. |
+| `output_schema` | `JSONSchema` | Yes | JSON Schema for output results. |
+| `access_level` | `"public" \| "authenticated" \| "authorized" \| "host_delegated"` | Yes | Access level required to use this capability. |
+| `description` | `string` | No | Capability description. |
+| `tags` | `string[]` | No | Semantic tags for fuzzy discovery. |
+
+---
+
+### SharingWillingness [NEW]
+
+Declares what cognitive resources a Fay is willing to share and its preferred sharing mode.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `shareable_resource_types` | `CognitiveResourceType[]` | Yes | Resource types this Fay is willing to share. |
+| `preferred_mode` | `"delegated_access" \| "collaborative_space" \| "both"` | Yes | Preferred sharing mode. |
+| `max_concurrent_contexts` | `number` | Yes | Maximum number of concurrent SharedContexts. |
+
+---
+
+### FayStatus [NEW]
+
+Real-time operational status of a Fay.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `availability` | `"online" \| "busy" \| "away" \| "offline"` | Yes | Current availability. |
+| `current_contexts` | `number` | Yes | Number of currently active SharedContexts. |
+| `last_active` | `string` (ISO 8601) | Yes | Timestamp of last activity. |
+
+---
+
+### HostAuthorization [NEW]
+
+Defines the boundary of what the Host has authorized this Fay to do and share. References FP (Faying Protocol) authorization.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `fp_authorization_ref` | `string` | Yes | FP protocol authorization reference. |
+| `authorized_resource_types` | `CognitiveResourceType[]` | Yes | Resource types the Host has authorized for sharing. |
+| `authorized_operations` | `string[]` | Yes | Operations the Host has authorized. |
+| `max_sharing_duration` | `string` (ISO 8601 duration) | Yes | Maximum duration for any single sharing session. |
+| `restrictions` | `AuthorizationRestriction[]` | Yes | Explicit restrictions on sharing. |
+
+---
+
+### AuthorizationRestriction [NEW]
+
+An explicit restriction placed by the Host on what the Fay may share.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `restriction_type` | `string` | Yes | Restriction type identifier (e.g. `"no_medical_data"`, `"no_financial_data"`). |
+| `description` | `string` | Yes | Human-readable description of the restriction. |
+
+---
+
+## 2. Cognitive Sharing Layer
+
+The Cognitive Sharing Layer is **the soul of TP**. It answers: *"What do we share, and how?"*
+SharedContext is a temporary mounting space for cognitive resources — analogous to a filesystem `mount`.
+
+---
+
+### SharedContext [NEW]
+
+Temporary mounting space for cognitive resources. Both parties mount selected resources into a shared space and can directly access them.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `context_id` | `string` | Yes | Globally unique SharedContext identifier. |
+| `participants` | `FayIdentity[]` | Yes | Participating Fay identities. |
+| `mode` | `"delegated_access" \| "collaborative_space"` | Yes | Sharing mode. |
+| `mounted_resources` | `MountedResource[]` | Yes | Currently mounted cognitive resources. |
+| `access_control` | `AccessControlList` | Yes | Access control configuration. |
+| `lifecycle` | `ContextLifecycle` | Yes | Lifecycle state and metadata. |
+| `sync_state` | `SyncState` | Yes | Synchronization state. |
+
+---
+
+### MountedResource [NEW]
+
+A cognitive resource mounted into a SharedContext at a specific mount point.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `resource` | `CognitiveResource` | Yes | The cognitive resource. |
+| `mount_point` | `string` | Yes | Mount point path within the SharedContext. |
+| `owner_fay_id` | `string` | Yes | Fay ID of the resource owner. |
+| `permissions` | `ResourcePermissions` | Yes | Per-participant permissions for this resource. |
+
+---
+
+### ResourcePermissions [NEW]
+
+Per-participant permission map for a mounted resource. Keys are Fay IDs.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `[fay_id]` | `object` | — | Permission entry keyed by Fay ID. |
+| `[fay_id].read` | `boolean` | Yes | Whether the Fay can read this resource. |
+| `[fay_id].write` | `boolean` | Yes | Whether the Fay can write to this resource. |
+| `[fay_id].time_limited` | `string` (ISO 8601 duration) | No | Optional time limit on access. |
+
+---
+
+### AccessControlList [NEW]
+
+Access control configuration for a SharedContext.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `default_policy` | `"deny_all" \| "read_only" \| "read_write"` | Yes | Default access policy for all resources. |
+| `per_resource_overrides` | `ResourcePermissions[]` | Yes | Per-resource permission overrides. |
+
+---
+
+### ContextLifecycle [NEW]
+
+Lifecycle state and metadata for a SharedContext.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `state` | `"proposed" \| "active" \| "suspended" \| "expired" \| "revoked"` | Yes | Current lifecycle state. |
+| `creation_time` | `string` (ISO 8601) | Yes | When the SharedContext was created. |
+| `expiration` | `string` (ISO 8601) | No | Time-based expiration timestamp. |
+| `expiration_event` | `string` | No | Event-based expiration condition. |
+| `revocation_reason` | `string` | No | Reason for revocation (when state is `"revoked"`). |
+| `last_state_change` | `string` (ISO 8601) | Yes | Timestamp of the last state transition. |
+
+---
+
+### SyncState [NEW]
+
+Synchronization metadata for a SharedContext. Both sides maintain a copy; this tracks consistency.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | `number` | Yes | Monotonically increasing version number. |
+| `last_sync_time` | `string` (ISO 8601) | Yes | Timestamp of the last successful sync. |
+| `conflict_resolution` | `"last_writer_wins" \| "crdt" \| "operational_transform"` | Yes | Conflict resolution strategy. |
+| `pending_changes` | `number` | Yes | Number of pending (unsynced) changes. |
+
+---
+
+### CognitiveResourceType (enum) [NEW]
+
+Enumerates the types of cognitive resources that can be shared.
+
+| Value | Description |
+|-------|-------------|
+| `"memory_fragment"` | Session-level partial long-term memory relevant to the current collaboration. |
+| `"view_state"` | Real-time state of an interface or data view being operated on. |
+| `"reasoning_engine"` | Reasoning logic and decision rules for the current task. |
+| `"environment_context"` | Dynamic environmental information (time, location, device state, etc.). |
+
+---
+
+### CognitiveResource [NEW]
+
+The unit of shareable cognitive content. Each resource has a type, content reference, access policy, schema, and metadata.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `resource_id` | `string` | Yes | Unique resource identifier. |
+| `resource_type` | `CognitiveResourceType` | Yes | Type of cognitive resource. |
+| `content_ref` | `InlineContent \| ReferenceContent` | Yes | Content reference (inline for ≤ 64 KB, reference for > 64 KB). |
+| `access_policy` | `ResourceAccessPolicy` | Yes | Access policy for this resource. |
+| `schema_ref` | `string` | Yes | URI reference to the resource structure schema. |
+| `metadata` | `ResourceMetadata` | Yes | Resource metadata. |
+
+---
+
+### InlineContent [NEW]
+
+Small data embedded directly in the message. Recommended for resources under 64 KB.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `mode` | `"inline"` | Yes | Content mode discriminator. |
+| `data` | `unknown` | Yes | The embedded data. |
+| `size_bytes` | `number` | Yes | Size of the data in bytes. |
+
+---
+
+### ReferenceContent [NEW]
+
+Large data referenced by URI. MUST be used for resources over 64 KB.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `mode` | `"reference"` | Yes | Content mode discriminator. |
+| `uri` | `string` | Yes | URI pointing to the resource. |
+| `content_type` | `string` | Yes | MIME type of the resource. |
+| `size_bytes` | `number` | Yes | Size of the resource in bytes. |
+| `checksum` | `string` | No | SHA-256 checksum for integrity verification. |
+
+---
+
+### ResourceAccessPolicy [NEW]
+
+Access policy for a cognitive resource.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `owner_fay_id` | `string` | Yes | Fay ID of the resource owner. |
+| `visibility` | `"private" \| "shared" \| "public"` | Yes | Visibility level. |
+| `requires_encryption` | `boolean` | Yes | Whether encryption is required for this resource. |
+
+---
+
+### ResourceMetadata [NEW]
+
+Metadata associated with a cognitive resource.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `created_at` | `string` (ISO 8601) | Yes | Creation timestamp. |
+| `updated_at` | `string` (ISO 8601) | Yes | Last update timestamp. |
+| `version` | `number` | Yes | Resource version number. |
+| `description` | `string` | No | Human-readable description. |
+
+---
+
+### EncryptedPayload [CHANGED]
+
+Encrypted structure for transmitting Host privacy data. Supports hybrid encryption with selective disclosure.
+
+**Change:** `KeyExchangeInfo.method` no longer includes `"RSA-OAEP"` — only `"ECDH-P256"` and `"X25519"` are supported.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `encryption_algorithm` | `"AES-256-GCM" \| "ChaCha20-Poly1305"` | Yes | Symmetric encryption algorithm. |
+| `encrypted_data` | `string` | Yes | Base64-encoded encrypted data. |
+| `key_exchange_info` | `KeyExchangeInfo` | Yes | Key exchange information. |
+| `selective_disclosure` | `SelectiveDisclosure` | No | Selective disclosure configuration. |
+| `audit_ref` | `string` | Yes | Audit record reference. |
+
+---
+
+### KeyExchangeInfo [CHANGED]
+
+Key exchange information for hybrid encryption. Used within `EncryptedPayload`.
+
+**Change:** Removed `"RSA-OAEP"` from the `method` enum. Only ECDH-based methods are now supported.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `method` | `"ECDH-P256" \| "X25519"` | Yes | Key exchange method. |
+| `public_key` | `string` | Yes | Base64-encoded public key. |
+| `encrypted_session_key` | `string` | Yes | Encrypted session key. |
+
+---
+
+### SelectiveDisclosure [RETAINED]
+
+Controls which fields of encrypted data may be disclosed. Used within `EncryptedPayload`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `disclosed_fields` | `string[]` | Yes | Field paths allowed for disclosure. |
+| `policy_ref` | `string` | No | Disclosure policy reference. |
+
+---
+
+### CallbackCredential [RETAINED]
+
+Credential authorizing access to specific resources during consultation. Supports scoped, time-limited access with revocation.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `credential_id` | `string` | Yes | Unique credential identifier. |
+| `scope` | `CredentialScope` | Yes | Access scope. |
+| `expiration` | `string` (ISO 8601) | Yes | Expiration time. |
+| `resource_reference` | `string` | Yes | Resource reference. |
+| `issuer_fay_id` | `string` | Yes | Issuer Fay ID. |
+| `encrypted_token` | `string` | Yes | Encrypted access token. |
+| `revocation_endpoint` | `string` (URI) | No | Revocation endpoint URI. |
+
+---
+
+### CredentialScope [RETAINED]
+
+Defines the access scope of a callback credential. Specifies which resources and operations are permitted.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `resources` | `string[]` (minItems: 1) | Yes | Accessible resource list. |
+| `operations` | `string[]` (minItems: 1) | Yes | Allowed operations list. |
+| `constraints` | `Record<string, unknown>` | No | Additional constraints. |
+
+---
+
+## 3. Goal Negotiation Layer
+
+The Goal Negotiation Layer answers: *"What do we want to accomplish together?"*
+Goal unifies the previous Intent + Task concepts into a single structure that describes both intent and executable work.
+
+---
+
+### GoalType (enum) [NEW]
+
+Enumerates the types of goals a Fay can propose.
+
+| Value | Description |
+|-------|-------------|
+| `"query"` | Information retrieval. |
+| `"execute"` | Action execution. |
+| `"subscribe"` | Event subscription. |
+| `"notify"` | One-way notification. |
+| `"delegate"` | Delegated task execution. |
+| `"consult"` | Consultation (specialized information exchange). |
+
+---
+
+### GoalStatus (enum) [NEW]
+
+Enumerates the lifecycle states of a Goal.
+
+| Value | Description |
+|-------|-------------|
+| `"proposed"` | Goal has been proposed, awaiting response. |
+| `"negotiating"` | Counter-proposal received, under negotiation. |
+| `"accepted"` | Both parties agreed on the goal. |
+| `"in_progress"` | Goal execution is underway. |
+| `"completed"` | Goal executed successfully. |
+| `"failed"` | Goal execution failed. |
+| `"cancelled"` | Goal was cancelled during execution. |
+| `"rejected"` | Goal was rejected during negotiation. |
+
+---
+
+### Goal [NEW]
+
+A structured collaboration goal. Unifies the previous `Intent` and `TaskMessage` into a single concept that describes what to achieve and can be decomposed into executable sub-goals.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `goal_id` | `string` | Yes | Unique goal identifier. |
+| `goal_type` | `GoalType` | Yes | Type of goal. |
+| `description` | `GoalDescription` | Yes | Structured description of the goal. |
+| `parameters` | `TypedParameters` | Yes | Typed parameters with schema reference. |
+| `constraints` | `GoalConstraint[]` | Yes | Execution constraints. |
+| `sub_goals` | `SubGoalReference[]` | Yes | Sub-goal references (MUST form a DAG). |
+| `context_ref` | `string` | Yes | ID of the associated active SharedContext. |
+| `status` | `GoalStatus` | Yes | Current goal status. |
+| `result` | `GoalResult` | No | Result when completed or failed. |
+
+---
+
+### GoalDescription [NEW]
+
+Structured description of a Goal, including expected output schema.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `summary` | `string` | Yes | Brief description of the goal. |
+| `detailed` | `string` | No | Detailed description. |
+| `output_schema` | `JSONSchema` | Yes | JSON Schema describing the expected output. |
+
+---
+
+### GoalConstraint [NEW]
+
+An execution constraint on a Goal.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `constraint_type` | `"deadline" \| "priority" \| "resource_limit" \| "custom"` | Yes | Constraint type. |
+| `value` | `unknown` | Yes | Constraint value. |
+| `required` | `boolean` | Yes | Whether this constraint MUST be satisfied. |
+
+---
+
+### SubGoalReference [NEW]
+
+Reference to a sub-goal with dependency declarations. Dependencies MUST form a directed acyclic graph (DAG).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `sub_goal_id` | `string` | Yes | Sub-goal identifier. |
+| `depends_on` | `string[]` | Yes | IDs of sub-goals this one depends on (MUST form a DAG). |
+
+---
+
+### GoalResult [NEW]
+
+Result of a completed or failed Goal.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `goal_id` | `string` | Yes | Goal identifier. |
+| `status` | `"completed" \| "failed"` | Yes | Result status. |
+| `output` | `Record<string, unknown>` | No | Output data on success (conforms to `output_schema`). |
+| `error` | `GoalError` | No | Error details on failure. |
+
+---
+
+### GoalError [NEW]
+
+Error information for a failed Goal.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `error_code` | `string` | Yes | Error code. |
+| `error_message` | `string` | Yes | Human-readable error description. |
+| `recovery_suggestions` | `string[]` | No | Suggested recovery actions. |
+
+---
+
+### ConsultationRequest [RETAINED]
+
+Request for Fay-to-Fay consultation — a specialized Goal of type `"consult"`. Supports authorization scoping, asynchronous callbacks, and consultation chaining.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `consultation_id` | `string` | Yes | Unique consultation identifier. |
+| `query_type` | `string` | Yes | Query type. |
+| `required_info_schema` | `JSONSchema` | Yes | JSON Schema describing the required information. |
+| `authorization_scope` | `AuthorizationScope` | Yes | Authorization scope for this consultation. |
+| `callback_config` | `CallbackConfig` | No | Callback configuration for async responses. |
+| `chained_from` | `string` | No | ID of the preceding consultation in a chain. |
+
+---
+
+### ConsultationResponse [RETAINED]
+
+Response to a consultation request.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `consultation_id` | `string` | Yes | Consultation identifier. |
+| `status` | `"fulfilled" \| "partial" \| "rejected"` | Yes | Response status. |
+| `data` | `Record<string, unknown>` | No | Response data conforming to `required_info_schema`. |
+| `rejection_reason` | `string` | No | Reason for rejection. |
+
+---
+
+### AuthorizationScope [RETAINED]
+
+Authorization scope for consultation requests. Defines required permissions and optional Host delegation.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `required_permissions` | `string[]` | Yes | Required permissions. |
+| `host_delegation` | `HostDelegation` | No | Host delegation details. |
+
+---
+
+### HostDelegation [RETAINED]
+
+Host-delegated authorization details. Enables a Host to delegate specific permissions to a Fay for cross-Fay operations.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `host_id` | `string` | Yes | Host identifier. |
+| `delegated_permissions` | `string[]` | Yes | Delegated permission list. |
+| `fp_authorization_ref` | `string` | Yes | FP protocol authorization reference. |
+
+---
+
+### CallbackConfig [RETAINED]
+
+Configuration for asynchronous consultation callbacks.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `callback_url` | `string` | No | Callback URL. |
+| `callback_credential` | `CallbackCredential` | No | Credential for the callback. |
+| `timeout_ms` | `number` (≥ 0) | Yes | Timeout in milliseconds. |
+| `retry_policy` | `RetryPolicy` | No | Retry policy. |
+
+---
+
+### RetryPolicy [RETAINED]
+
+Retry policy for callback operations.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `max_retries` | `number` (≥ 0) | Yes | Maximum number of retries. |
+| `backoff_strategy` | `"fixed" \| "exponential"` | Yes | Backoff strategy. |
+| `initial_delay_ms` | `number` (≥ 0) | Yes | Initial delay in milliseconds. |
+
+---
+
+## 4. Protocol Negotiation
+
+Protocol negotiation determines *how* two Fays communicate — transport method, communication tier, and security level.
+It MUST be the first step before any TP interaction.
+
+---
+
+### CommunicationTier (enum) [NEW]
+
+Three-tier communication capability levels (inspired by Agora).
+
+| Value | Description |
+|-------|-------------|
+| `"tier_1_standardized"` | Standardized routines: pre-agreed parameter tables, highest efficiency, lowest flexibility. |
+| `"tier_2_ai_generated"` | AI-generated routines: dynamically generated interaction protocols, moderate efficiency and flexibility. |
+| `"tier_3_natural_language"` | Natural language fallback: free-form communication, lowest efficiency, highest flexibility. |
+
+---
+
+### ProtocolContract [NEW]
+
+The outcome of protocol negotiation — a communication contract agreed upon by both parties.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `contract_id` | `string` | Yes | Unique contract identifier. |
+| `transport_method` | `TransportMethod` | Yes | Agreed transport method. |
+| `communication_tier` | `CommunicationTier` | Yes | Agreed communication tier. |
+| `security_level` | `"basic" \| "standard" \| "high"` | Yes | Agreed security level. |
+| `contract_expiration` | `string` (ISO 8601) | Yes | Contract validity expiration. |
+| `negotiation_trace` | `NegotiationStep[]` | Yes | Record of negotiation steps. |
+
+---
+
+### TransportMethod [NEW]
+
+Describes a transport protocol and its endpoint.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `protocol` | `"native_tp" \| "a2a_jsonrpc" \| "mcp_tool_call" \| "rest_api" \| "prompt_embedding"` | Yes | Transport protocol identifier. |
+| `endpoint` | `string` | No | Protocol endpoint URL. |
+| `version` | `string` | No | Protocol version. |
+
+---
+
+### NegotiationStep [NEW]
+
+A single step in the protocol negotiation process.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `step` | `number` | Yes | Step sequence number. |
+| `initiator_fay_id` | `string` | Yes | Fay ID of the step initiator. |
+| `proposed` | `TransportMethod[]` | Yes | Transport methods proposed in this step. |
+| `selected` | `TransportMethod` | No | The transport method selected (if agreement reached). |
+| `timestamp` | `string` (ISO 8601) | Yes | Timestamp of this negotiation step. |
+
+---
+
+## 5. Message Envelope
+
+The MessageEnvelope is the outer wrapper for all TP communication. It is transport-agnostic — the same envelope can be transmitted over native TP, A2A JSON-RPC, MCP tool call, REST API, or prompt embedding.
+
+---
+
+### MessageType (enum) [CHANGED]
+
+Enumerates all valid message types, organized by the three-layer architecture.
+
+**Change:** Completely replaced the previous enum values. The old values (`intent_request`, `intent_response`, `task_dispatch`, `task_result`, `capability_query`, `capability_declaration`) have been removed and replaced with 19 new values aligned to the three-layer architecture.
+
+#### Identity Recognition Layer
+
+| Value | Description |
+|-------|-------------|
+| `"identity_proof"` | DID identity proof exchange. |
+| `"profile_exchange"` | FayProfile exchange during session establishment. |
+
+#### Cognitive Sharing Layer
+
+| Value | Description |
+|-------|-------------|
+| `"context_create"` | Create a new SharedContext. |
+| `"context_update"` | Update an existing SharedContext. |
+| `"context_sync"` | Synchronize SharedContext state. |
+| `"context_revoke"` | Revoke a SharedContext. |
+| `"resource_mount"` | Mount a cognitive resource. |
+| `"resource_unmount"` | Unmount a cognitive resource. |
+| `"resource_notify"` | Notify participants of resource changes. |
+
+#### Goal Negotiation Layer
+
+| Value | Description |
+|-------|-------------|
+| `"goal_propose"` | Propose a new Goal. |
+| `"goal_negotiate"` | Counter-propose during Goal negotiation. |
+| `"goal_accept"` | Accept a proposed Goal. |
+| `"goal_reject"` | Reject a proposed Goal. |
+| `"goal_result"` | Return Goal execution result. |
+| `"consultation_request"` | Initiate a consultation. |
+| `"consultation_response"` | Respond to a consultation. |
+
+#### Protocol Layer
+
+| Value | Description |
+|-------|-------------|
+| `"negotiate_request"` | Initiate protocol negotiation. |
+| `"negotiate_response"` | Respond to protocol negotiation. |
+| `"error"` | Error response. |
+
+---
+
+### MessageEnvelope [CHANGED]
+
+Outer wrapper for all TP communication.
+
+**Changes:**
+- `sender` and `receiver` now reference `FayIdentity` (was `FayIdentifier`).
+- `message_type` uses the new 19-value `MessageType` enum.
+- Added `protocol_contract_ref` field (reference to negotiated ProtocolContract).
+- Added `trace_info` field (cross-protocol tracing).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `tp_version` | `string` (semver) | Yes | Protocol version, e.g. `"1.0.0"`. |
+| `message_id` | `string` (UUID v7) | Yes | Globally unique message ID. |
+| `sender` | `FayIdentity` | Yes | Sender Fay identity. |
+| `receiver` | `FayIdentity` | Yes | Receiver Fay identity. |
+| `timestamp` | `string` (ISO 8601) | Yes | Message timestamp. |
+| `message_type` | `MessageType` | Yes | Message type (see enum above). |
+| `payload` | `unknown` | Yes | Message payload (type determined by `message_type`). |
+| `correlation_id` | `string` (UUID) | No | Correlation ID for request-response pairing. |
+| `signature` | `string` | No | Ed25519 message signature (Base64). |
+| `protocol_contract_ref` | `string` | No | Reference to the negotiated ProtocolContract. |
+| `trace_info` | `TraceInfo` | No | Cross-protocol tracing information. |
+
+---
+
+### TraceInfo [NEW]
+
+Cross-protocol tracing information. Preserves end-to-end traceability when messages cross protocol boundaries.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `original_protocol` | `string` | Yes | The original protocol type (e.g. `"a2a"`, `"mcp"`). |
+| `original_message_id` | `string` | Yes | Message ID in the original protocol. |
+| `hop_count` | `number` | Yes | Number of protocol boundary hops. |
+
+---
+
+## 6. Retained Types
+
+---
+
+### TypedParameters [RETAINED]
+
+Typed parameters with a schema reference and values. Used by `Goal` to carry structured input.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `schema_ref` | `string` | Yes | URI reference to the parameter schema. |
+| `values` | `Record<string, unknown>` | Yes | Parameter values conforming to the referenced schema. |
+
+---
+
+## 7. Error Handling
+
+---
+
+### TPError [NEW]
+
+Structured error response for all TP error conditions. Error codes use category prefixes aligned to the three-layer architecture (e.g. `TP-ID001`, `TP-CTX002`).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `error_code` | `string` | Yes | Error code with category prefix (e.g. `"TP-ID001"`). |
+| `message` | `string` | Yes | Human-readable error description. |
+| `details` | `Record<string, unknown>` | No | Structured error details. |
+| `recovery_suggestions` | `string[]` | No | Suggested recovery actions. |
+| `correlation_id` | `string` | No | ID of the request that triggered this error. |
+
+#### Error Code Categories
+
+| Prefix | Category | Description |
+|--------|----------|-------------|
+| `TP-ID` | Identity Verification | DID proof failures, missing fields, Host authorization errors. |
+| `TP-CTX` | Shared Context | Context creation rejection, expiration, revocation, sync conflicts. |
+| `TP-RES` | Cognitive Resource | Mount failures, URI unreachable, size limit violations, access denied. |
+| `TP-GOAL` | Goal Negotiation | Negotiation failure, cyclic dependencies, invalid context reference. |
+| `TP-NEG` | Protocol Negotiation | No mutual transport, no mutual tier, negotiation timeout. |
+| `TP-SEC` | Security & Encryption | Decryption failure, signature verification failure, unsupported algorithm. |
+| `TP-CRED` | Credentials | Credential expired (`TP-C001`), revoked (`TP-C002`), out-of-scope (`TP-C003`). |
+| `TP-ENV` | Envelope & Transport | Malformed envelope, unsupported version, invalid message type. |

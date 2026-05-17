@@ -1,0 +1,1463 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifay.dev/tp/schema/draft",
+  "title": "Telepathy Protocol (TP) — JSON Schema Definitions (Draft)",
+  "description": "JSON Schema definitions for the Telepathy Protocol, organized by the three-layer architecture: Identity Recognition Layer, Cognitive Sharing Layer, Goal Negotiation Layer, plus Protocol Negotiation, Message Envelope & Transport, and Error Handling.",
+  "type": "object",
+  "$defs": {
+    "JSONSchema": {
+      "type": "object",
+      "description": "Opaque JSON Schema object.",
+      "additionalProperties": true
+    },
+    "DIDProof": {
+      "type": "object",
+      "description": "DID proof for cryptographic verification.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Ed25519Signature2020",
+            "EcdsaSecp256k1Signature2019"
+          ]
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "verification_method": {
+          "type": "string",
+          "description": "Verification method URI."
+        },
+        "proof_value": {
+          "type": "string",
+          "description": "Base64-encoded signature."
+        }
+      },
+      "required": [
+        "type",
+        "created",
+        "verification_method",
+        "proof_value"
+      ],
+      "additionalProperties": false
+    },
+    "DIDIdentifier": {
+      "type": "object",
+      "description": "DID identifier with method, value, and proof.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "did:key",
+            "did:web",
+            "did:chain"
+          ]
+        },
+        "value": {
+          "type": "string"
+        },
+        "proof": {
+          "$ref": "#/$defs/DIDProof"
+        }
+      },
+      "required": [
+        "method",
+        "value",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+    "FayIdentity": {
+      "type": "object",
+      "description": "Fay identity — globally unique identifier with DID verification and Host attribution.",
+      "properties": {
+        "fay_id": {
+          "type": "string",
+          "description": "Globally unique identifier."
+        },
+        "fay_type": {
+          "type": "string",
+          "enum": [
+            "iFay",
+            "coFay"
+          ]
+        },
+        "host_id": {
+          "type": "string",
+          "description": "Host identifier (MUST be present when fay_type is iFay)."
+        },
+        "did": {
+          "$ref": "#/$defs/DIDIdentifier"
+        }
+      },
+      "required": [
+        "fay_id",
+        "fay_type",
+        "did"
+      ],
+      "if": {
+        "properties": {
+          "fay_type": {
+            "const": "iFay"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "host_id"
+        ]
+      },
+      "additionalProperties": false
+    },
+    "CognitiveResourceType": {
+      "type": "string",
+      "description": "Enumeration of cognitive resource types.",
+      "enum": [
+        "memory_fragment",
+        "view_state",
+        "reasoning_engine",
+        "environment_context"
+      ]
+    },
+    "CapabilityDescriptor": {
+      "type": "object",
+      "description": "Describes a single capability of a Fay.",
+      "properties": {
+        "capability_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "description": "Semver version string."
+        },
+        "input_schema": {
+          "$ref": "#/$defs/JSONSchema"
+        },
+        "output_schema": {
+          "$ref": "#/$defs/JSONSchema"
+        },
+        "access_level": {
+          "type": "string",
+          "enum": [
+            "public",
+            "authenticated",
+            "authorized",
+            "host_delegated"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Semantic tags."
+        }
+      },
+      "required": [
+        "capability_id",
+        "name",
+        "version",
+        "input_schema",
+        "output_schema",
+        "access_level"
+      ],
+      "additionalProperties": false
+    },
+    "SharingWillingness": {
+      "type": "object",
+      "description": "Declares what cognitive resources a Fay is willing to share.",
+      "properties": {
+        "shareable_resource_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CognitiveResourceType"
+          }
+        },
+        "preferred_mode": {
+          "type": "string",
+          "enum": [
+            "delegated_access",
+            "collaborative_space",
+            "both"
+          ]
+        },
+        "max_concurrent_contexts": {
+          "type": "integer",
+          "description": "Maximum number of concurrent shared contexts."
+        }
+      },
+      "required": [
+        "shareable_resource_types",
+        "preferred_mode",
+        "max_concurrent_contexts"
+      ],
+      "additionalProperties": false
+    },
+    "FayStatus": {
+      "type": "object",
+      "description": "Current operational status of a Fay.",
+      "properties": {
+        "availability": {
+          "type": "string",
+          "enum": [
+            "online",
+            "busy",
+            "away",
+            "offline"
+          ]
+        },
+        "current_contexts": {
+          "type": "integer",
+          "description": "Number of currently active shared contexts."
+        },
+        "last_active": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        }
+      },
+      "required": [
+        "availability",
+        "current_contexts",
+        "last_active"
+      ],
+      "additionalProperties": false
+    },
+    "AuthorizationRestriction": {
+      "type": "object",
+      "description": "A restriction on Host authorization.",
+      "properties": {
+        "restriction_type": {
+          "type": "string",
+          "description": "e.g. no_medical_data, no_financial_data."
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "restriction_type",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "HostAuthorization": {
+      "type": "object",
+      "description": "Boundary of what the Host has authorized this Fay to do and share.",
+      "properties": {
+        "fp_authorization_ref": {
+          "type": "string",
+          "description": "FP protocol authorization reference."
+        },
+        "authorized_resource_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CognitiveResourceType"
+          }
+        },
+        "authorized_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "max_sharing_duration": {
+          "type": "string",
+          "description": "ISO 8601 duration."
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuthorizationRestriction"
+          }
+        }
+      },
+      "required": [
+        "fp_authorization_ref",
+        "authorized_resource_types",
+        "authorized_operations",
+        "max_sharing_duration",
+        "restrictions"
+      ],
+      "additionalProperties": false
+    },
+    "FayProfile": {
+      "type": "object",
+      "description": "Fay profile — the 'business card' exchanged during session establishment.",
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/FayIdentity"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityDescriptor"
+          }
+        },
+        "sharing_willingness": {
+          "$ref": "#/$defs/SharingWillingness"
+        },
+        "status": {
+          "$ref": "#/$defs/FayStatus"
+        },
+        "host_authorization": {
+          "$ref": "#/$defs/HostAuthorization"
+        },
+        "conformance_level": {
+          "type": "string",
+          "enum": [
+            "tp_core",
+            "tp_secure",
+            "tp_full"
+          ],
+          "description": "Conformance level declaration."
+        },
+        "json_ld_context": {
+          "type": "string",
+          "description": "Optional JSON-LD semantic annotation."
+        }
+      },
+      "required": [
+        "identity",
+        "capabilities",
+        "sharing_willingness",
+        "status",
+        "host_authorization"
+      ],
+      "additionalProperties": false
+    },
+    "ResourcePermissions": {
+      "type": "object",
+      "description": "Per-Fay resource permissions. Keys are fay_id strings.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "read": {
+            "type": "boolean"
+          },
+          "write": {
+            "type": "boolean"
+          },
+          "time_limited": {
+            "type": "string",
+            "description": "ISO 8601 duration."
+          }
+        },
+        "required": [
+          "read",
+          "write"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "InlineContent": {
+      "type": "object",
+      "description": "Small data embedded directly (recommended < 64KB).",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "inline"
+        },
+        "data": {
+          "description": "Directly embedded data."
+        },
+        "size_bytes": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mode",
+        "data",
+        "size_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "ReferenceContent": {
+      "type": "object",
+      "description": "Large data referenced by URI (MUST be used for > 64KB).",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "reference"
+        },
+        "uri": {
+          "type": "string",
+          "description": "Resource URI."
+        },
+        "content_type": {
+          "type": "string",
+          "description": "MIME type."
+        },
+        "size_bytes": {
+          "type": "integer"
+        },
+        "checksum": {
+          "type": "string",
+          "description": "SHA-256 checksum."
+        }
+      },
+      "required": [
+        "mode",
+        "uri",
+        "content_type",
+        "size_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceAccessPolicy": {
+      "type": "object",
+      "description": "Access policy for a cognitive resource.",
+      "properties": {
+        "owner_fay_id": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "private",
+            "shared",
+            "public"
+          ]
+        },
+        "requires_encryption": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "owner_fay_id",
+        "visibility",
+        "requires_encryption"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceMetadata": {
+      "type": "object",
+      "description": "Metadata for a cognitive resource.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "version": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "CognitiveResource": {
+      "type": "object",
+      "description": "A shareable cognitive resource unit.",
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "description": "Unique identifier."
+        },
+        "resource_type": {
+          "$ref": "#/$defs/CognitiveResourceType"
+        },
+        "content_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/InlineContent"
+            },
+            {
+              "$ref": "#/$defs/ReferenceContent"
+            }
+          ],
+          "description": "Content reference — inline or URI reference."
+        },
+        "access_policy": {
+          "$ref": "#/$defs/ResourceAccessPolicy"
+        },
+        "schema_ref": {
+          "type": "string",
+          "description": "Resource structure Schema reference."
+        },
+        "metadata": {
+          "$ref": "#/$defs/ResourceMetadata"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_type",
+        "content_ref",
+        "access_policy",
+        "schema_ref",
+        "metadata"
+      ],
+      "additionalProperties": false
+    },
+    "MountedResource": {
+      "type": "object",
+      "description": "A cognitive resource mounted into a SharedContext.",
+      "properties": {
+        "resource": {
+          "$ref": "#/$defs/CognitiveResource"
+        },
+        "mount_point": {
+          "type": "string",
+          "description": "Mount point path."
+        },
+        "owner_fay_id": {
+          "type": "string",
+          "description": "Resource owner."
+        },
+        "permissions": {
+          "$ref": "#/$defs/ResourcePermissions"
+        }
+      },
+      "required": [
+        "resource",
+        "mount_point",
+        "owner_fay_id",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
+    "AccessControlList": {
+      "type": "object",
+      "description": "Access control list for a SharedContext.",
+      "properties": {
+        "default_policy": {
+          "type": "string",
+          "enum": [
+            "deny_all",
+            "read_only",
+            "read_write"
+          ]
+        },
+        "per_resource_overrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourcePermissions"
+          }
+        }
+      },
+      "required": [
+        "default_policy",
+        "per_resource_overrides"
+      ],
+      "additionalProperties": false
+    },
+    "ContextLifecycle": {
+      "type": "object",
+      "description": "Lifecycle state of a SharedContext.",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "active",
+            "suspended",
+            "expired",
+            "revoked"
+          ]
+        },
+        "creation_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp (time-based expiration)."
+        },
+        "expiration_event": {
+          "type": "string",
+          "description": "Event-based expiration condition."
+        },
+        "revocation_reason": {
+          "type": "string"
+        },
+        "last_state_change": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        }
+      },
+      "required": [
+        "state",
+        "creation_time",
+        "last_state_change"
+      ],
+      "additionalProperties": false
+    },
+    "SyncState": {
+      "type": "object",
+      "description": "Synchronization state of a SharedContext.",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "description": "Monotonically increasing version number."
+        },
+        "last_sync_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "conflict_resolution": {
+          "type": "string",
+          "enum": [
+            "last_writer_wins",
+            "crdt",
+            "operational_transform"
+          ]
+        },
+        "pending_changes": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "last_sync_time",
+        "conflict_resolution",
+        "pending_changes"
+      ],
+      "additionalProperties": false
+    },
+    "SharedContext": {
+      "type": "object",
+      "description": "Shared context — temporary mounting space for cognitive resources (TP's soul).",
+      "properties": {
+        "context_id": {
+          "type": "string",
+          "description": "Globally unique identifier."
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FayIdentity"
+          }
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "delegated_access",
+            "collaborative_space"
+          ]
+        },
+        "mounted_resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MountedResource"
+          }
+        },
+        "access_control": {
+          "$ref": "#/$defs/AccessControlList"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/ContextLifecycle"
+        },
+        "sync_state": {
+          "$ref": "#/$defs/SyncState"
+        }
+      },
+      "required": [
+        "context_id",
+        "participants",
+        "mode",
+        "mounted_resources",
+        "access_control",
+        "lifecycle",
+        "sync_state"
+      ],
+      "additionalProperties": false
+    },
+    "KeyExchangeInfo": {
+      "type": "object",
+      "description": "Key exchange information for encrypted payloads.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "ECDH-P256",
+            "X25519"
+          ]
+        },
+        "public_key": {
+          "type": "string",
+          "description": "Base64-encoded public key."
+        },
+        "encrypted_session_key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "public_key",
+        "encrypted_session_key"
+      ],
+      "additionalProperties": false
+    },
+    "SelectiveDisclosure": {
+      "type": "object",
+      "description": "Selective disclosure configuration.",
+      "properties": {
+        "disclosed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Field paths allowed to be disclosed."
+        },
+        "policy_ref": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "disclosed_fields"
+      ],
+      "additionalProperties": false
+    },
+    "EncryptedPayload": {
+      "type": "object",
+      "description": "Encrypted payload for transmitting Host privacy data.",
+      "properties": {
+        "encryption_algorithm": {
+          "type": "string",
+          "enum": [
+            "AES-256-GCM",
+            "ChaCha20-Poly1305"
+          ]
+        },
+        "encrypted_data": {
+          "type": "string",
+          "description": "Base64-encoded encrypted data."
+        },
+        "key_exchange_info": {
+          "$ref": "#/$defs/KeyExchangeInfo"
+        },
+        "selective_disclosure": {
+          "$ref": "#/$defs/SelectiveDisclosure"
+        },
+        "audit_ref": {
+          "type": "string",
+          "description": "Audit record reference."
+        }
+      },
+      "required": [
+        "encryption_algorithm",
+        "encrypted_data",
+        "key_exchange_info",
+        "audit_ref"
+      ],
+      "additionalProperties": false
+    },
+    "CredentialScope": {
+      "type": "object",
+      "description": "Scope of a callback credential.",
+      "properties": {
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Accessible resource list (minItems: 1)."
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Allowed operations list (minItems: 1)."
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "resources",
+        "operations"
+      ],
+      "additionalProperties": false
+    },
+    "CallbackCredential": {
+      "type": "object",
+      "description": "Credential for controlled resource access during consultation.",
+      "properties": {
+        "credential_id": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/CredentialScope"
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 expiration timestamp."
+        },
+        "resource_reference": {
+          "type": "string"
+        },
+        "issuer_fay_id": {
+          "type": "string"
+        },
+        "encrypted_token": {
+          "type": "string"
+        },
+        "revocation_endpoint": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "credential_id",
+        "scope",
+        "expiration",
+        "resource_reference",
+        "issuer_fay_id",
+        "encrypted_token"
+      ],
+      "additionalProperties": false
+    },
+    "GoalType": {
+      "type": "string",
+      "description": "Enumeration of goal types.",
+      "enum": [
+        "query",
+        "execute",
+        "subscribe",
+        "notify",
+        "delegate",
+        "consult"
+      ]
+    },
+    "GoalStatus": {
+      "type": "string",
+      "description": "Enumeration of goal execution states.",
+      "enum": [
+        "proposed",
+        "negotiating",
+        "accepted",
+        "in_progress",
+        "completed",
+        "failed",
+        "cancelled",
+        "rejected"
+      ]
+    },
+    "GoalDescription": {
+      "type": "object",
+      "description": "Structured description of a Goal.",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "Brief description."
+        },
+        "detailed": {
+          "type": "string",
+          "description": "Detailed description."
+        },
+        "output_schema": {
+          "$ref": "#/$defs/JSONSchema",
+          "description": "Expected output JSON Schema."
+        }
+      },
+      "required": [
+        "summary",
+        "output_schema"
+      ],
+      "additionalProperties": false
+    },
+    "TypedParameters": {
+      "type": "object",
+      "description": "Typed parameters with schema reference.",
+      "properties": {
+        "schema_ref": {
+          "type": "string"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schema_ref",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "GoalConstraint": {
+      "type": "object",
+      "description": "Execution constraint for a Goal.",
+      "properties": {
+        "constraint_type": {
+          "type": "string",
+          "enum": [
+            "deadline",
+            "priority",
+            "resource_limit",
+            "custom"
+          ]
+        },
+        "value": {
+          "description": "Constraint value."
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "constraint_type",
+        "value",
+        "required"
+      ],
+      "additionalProperties": false
+    },
+    "SubGoalReference": {
+      "type": "object",
+      "description": "Reference to a sub-goal within a Goal DAG.",
+      "properties": {
+        "sub_goal_id": {
+          "type": "string"
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "IDs of sub-goals this one depends on (MUST form a DAG)."
+        }
+      },
+      "required": [
+        "sub_goal_id",
+        "depends_on"
+      ],
+      "additionalProperties": false
+    },
+    "GoalError": {
+      "type": "object",
+      "description": "Error information for a failed Goal.",
+      "properties": {
+        "error_code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        },
+        "recovery_suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "error_code",
+        "error_message"
+      ],
+      "additionalProperties": false
+    },
+    "GoalResult": {
+      "type": "object",
+      "description": "Result of a completed or failed Goal.",
+      "properties": {
+        "goal_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed"
+          ]
+        },
+        "output": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Output conforming to output_schema on success."
+        },
+        "error": {
+          "$ref": "#/$defs/GoalError",
+          "description": "Error information on failure."
+        }
+      },
+      "required": [
+        "goal_id",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "Goal": {
+      "type": "object",
+      "description": "Structured collaboration goal (unifies Intent + Task).",
+      "properties": {
+        "goal_id": {
+          "type": "string",
+          "description": "Unique identifier."
+        },
+        "goal_type": {
+          "$ref": "#/$defs/GoalType"
+        },
+        "description": {
+          "$ref": "#/$defs/GoalDescription"
+        },
+        "parameters": {
+          "$ref": "#/$defs/TypedParameters"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GoalConstraint"
+          }
+        },
+        "sub_goals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SubGoalReference"
+          }
+        },
+        "context_ref": {
+          "type": "string",
+          "description": "Associated SharedContext ID."
+        },
+        "status": {
+          "$ref": "#/$defs/GoalStatus"
+        },
+        "result": {
+          "$ref": "#/$defs/GoalResult"
+        }
+      },
+      "required": [
+        "goal_id",
+        "goal_type",
+        "description",
+        "parameters",
+        "constraints",
+        "sub_goals",
+        "context_ref",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "HostDelegation": {
+      "type": "object",
+      "description": "Host delegation information.",
+      "properties": {
+        "host_id": {
+          "type": "string"
+        },
+        "delegated_permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fp_authorization_ref": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "host_id",
+        "delegated_permissions",
+        "fp_authorization_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AuthorizationScope": {
+      "type": "object",
+      "description": "Authorization scope for consultation requests.",
+      "properties": {
+        "required_permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "host_delegation": {
+          "$ref": "#/$defs/HostDelegation"
+        }
+      },
+      "required": [
+        "required_permissions"
+      ],
+      "additionalProperties": false
+    },
+    "RetryPolicy": {
+      "type": "object",
+      "description": "Retry policy configuration.",
+      "properties": {
+        "max_retries": {
+          "type": "integer"
+        },
+        "backoff_strategy": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "exponential"
+          ]
+        },
+        "initial_delay_ms": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_retries",
+        "backoff_strategy",
+        "initial_delay_ms"
+      ],
+      "additionalProperties": false
+    },
+    "CallbackConfig": {
+      "type": "object",
+      "description": "Callback configuration for asynchronous consultation.",
+      "properties": {
+        "callback_url": {
+          "type": "string"
+        },
+        "callback_credential": {
+          "$ref": "#/$defs/CallbackCredential"
+        },
+        "timeout_ms": {
+          "type": "integer"
+        },
+        "retry_policy": {
+          "$ref": "#/$defs/RetryPolicy"
+        }
+      },
+      "required": [
+        "timeout_ms"
+      ],
+      "additionalProperties": false
+    },
+    "ConsultationRequest": {
+      "type": "object",
+      "description": "Consultation request — specialized Goal of type 'consult'.",
+      "properties": {
+        "consultation_id": {
+          "type": "string"
+        },
+        "query_type": {
+          "type": "string"
+        },
+        "required_info_schema": {
+          "$ref": "#/$defs/JSONSchema"
+        },
+        "authorization_scope": {
+          "$ref": "#/$defs/AuthorizationScope"
+        },
+        "callback_config": {
+          "$ref": "#/$defs/CallbackConfig"
+        },
+        "chained_from": {
+          "type": "string",
+          "description": "Previous consultation ID in a consultation chain."
+        }
+      },
+      "required": [
+        "consultation_id",
+        "query_type",
+        "required_info_schema",
+        "authorization_scope"
+      ],
+      "additionalProperties": false
+    },
+    "ConsultationResponse": {
+      "type": "object",
+      "description": "Response to a consultation request.",
+      "properties": {
+        "consultation_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "fulfilled",
+            "partial",
+            "rejected"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "rejection_reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "consultation_id",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "CommunicationTier": {
+      "type": "string",
+      "description": "Communication capability tier.",
+      "enum": [
+        "tier_1_standardized",
+        "tier_2_ai_generated",
+        "tier_3_natural_language"
+      ]
+    },
+    "TransportMethod": {
+      "type": "object",
+      "description": "Transport method specification.",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "native_tp",
+            "a2a_jsonrpc",
+            "mcp_tool_call",
+            "rest_api",
+            "prompt_embedding"
+          ]
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol"
+      ],
+      "additionalProperties": false
+    },
+    "NegotiationStep": {
+      "type": "object",
+      "description": "A single step in protocol negotiation.",
+      "properties": {
+        "step": {
+          "type": "integer"
+        },
+        "initiator_fay_id": {
+          "type": "string"
+        },
+        "proposed": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TransportMethod"
+          }
+        },
+        "selected": {
+          "$ref": "#/$defs/TransportMethod"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        }
+      },
+      "required": [
+        "step",
+        "initiator_fay_id",
+        "proposed",
+        "timestamp"
+      ],
+      "additionalProperties": false
+    },
+    "ProtocolContract": {
+      "type": "object",
+      "description": "Protocol contract — the outcome of protocol negotiation.",
+      "properties": {
+        "contract_id": {
+          "type": "string"
+        },
+        "transport_method": {
+          "$ref": "#/$defs/TransportMethod"
+        },
+        "communication_tier": {
+          "$ref": "#/$defs/CommunicationTier"
+        },
+        "security_level": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "standard",
+            "high"
+          ]
+        },
+        "contract_expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "negotiation_trace": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NegotiationStep"
+          }
+        }
+      },
+      "required": [
+        "contract_id",
+        "transport_method",
+        "communication_tier",
+        "security_level",
+        "contract_expiration",
+        "negotiation_trace"
+      ],
+      "additionalProperties": false
+    },
+    "MessageType": {
+      "type": "string",
+      "description": "Enumeration of all valid message types organized by three-layer architecture.",
+      "enum": [
+        "identity_proof",
+        "profile_exchange",
+        "context_create",
+        "context_update",
+        "context_sync",
+        "context_revoke",
+        "resource_mount",
+        "resource_unmount",
+        "resource_notify",
+        "goal_propose",
+        "goal_negotiate",
+        "goal_accept",
+        "goal_reject",
+        "goal_result",
+        "consultation_request",
+        "consultation_response",
+        "negotiate_request",
+        "negotiate_response",
+        "error"
+      ]
+    },
+    "TraceInfo": {
+      "type": "object",
+      "description": "Cross-protocol tracing information.",
+      "properties": {
+        "original_protocol": {
+          "type": "string",
+          "description": "Original protocol type."
+        },
+        "original_message_id": {
+          "type": "string",
+          "description": "Original message ID."
+        },
+        "hop_count": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "original_protocol",
+        "original_message_id",
+        "hop_count"
+      ],
+      "additionalProperties": false
+    },
+    "MessageEnvelope": {
+      "type": "object",
+      "description": "Message envelope — the outer wrapper for all TP communications.",
+      "properties": {
+        "tp_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semver version string."
+        },
+        "message_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID v7 message identifier."
+        },
+        "sender": {
+          "$ref": "#/$defs/FayIdentity"
+        },
+        "receiver": {
+          "$ref": "#/$defs/FayIdentity"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp."
+        },
+        "message_type": {
+          "$ref": "#/$defs/MessageType"
+        },
+        "payload": {
+          "description": "Message payload — concrete type determined by message_type."
+        },
+        "correlation_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID for request-response pairing."
+        },
+        "signature": {
+          "type": "string",
+          "description": "Ed25519 signature (Base64)."
+        },
+        "protocol_contract_ref": {
+          "type": "string",
+          "description": "Reference to the negotiated ProtocolContract."
+        },
+        "trace_info": {
+          "$ref": "#/$defs/TraceInfo"
+        }
+      },
+      "required": [
+        "tp_version",
+        "message_id",
+        "sender",
+        "receiver",
+        "timestamp",
+        "message_type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "TPError": {
+      "type": "object",
+      "description": "Structured error response with category-prefixed error codes.",
+      "properties": {
+        "error_code": {
+          "type": "string",
+          "description": "Error code with category prefix, e.g. TP-ID001."
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error description."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Structured error details."
+        },
+        "recovery_suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Suggested recovery actions."
+        },
+        "correlation_id": {
+          "type": "string",
+          "description": "Reference to the triggering request ID."
+        }
+      },
+      "required": [
+        "error_code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

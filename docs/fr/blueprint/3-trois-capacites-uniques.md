@@ -99,9 +99,9 @@ Les ressources cognitives partageables incluent :
 | Règles ou moteurs de raisonnement | Logique de raisonnement pour la tâche en cours | Un Fay juridique partage les dispositions légales applicables et les chaînes de raisonnement — le Fay fiscal peut directement référencer ces dispositions pour calculer les implications fiscales, sans que le Fay juridique ait à copier-coller les statuts pertinents dans les messages à chaque fois |
 | Contexte environnemental | Informations dynamiques comme l'heure, le lieu, l'état de l'appareil | Un Fay sur un drone partage les coordonnées GPS en temps réel, le niveau de batterie et l'angle de caméra avec le Fay de contrôle au sol — le Fay au sol peut directement « percevoir » l'état du drone plutôt que d'attendre des messages de rapport d'état périodiques |
 
-#### Autorisation du Host et audit
+#### Autorisation du Human Prime et audit
 
-La portée du Shared Context est strictement déterminée par l'**autorisation du Host**. Un Fay ne peut pas décider unilatéralement quelles ressources cognitives partager — chaque action de partage doit se produire dans les limites pré-autorisées par le Host. De plus, tout accès au Shared Context est **auditable**, permettant au Host de vérifier après coup quelles informations ont été partagées, par qui elles ont été consultées et à quel moment.
+La portée du Shared Context est strictement déterminée par l'**autorisation du Human Prime**. Un Fay ne peut pas décider unilatéralement quelles ressources cognitives partager — chaque action de partage doit se produire dans les limites pré-autorisées par le Human Prime. De plus, tout accès au Shared Context est **auditable**, permettant au Human Prime de vérifier après coup quelles informations ont été partagées, par qui elles ont été consultées et à quel moment.
 
 Cette conception forme un contraste marqué avec le principe d'Opaque Execution d'A2A :
 
@@ -110,7 +110,7 @@ Cette conception forme un contraste marqué avec le principe d'Opaque Execution 
 | État interne | Non partagé ; l'Agent est une boîte noire | Partagé sélectivement dans le cadre autorisé |
 | Profondeur de collaboration | Niveau tâche (délégation et rapport) | Niveau cognitif (mémoire et raisonnement partagés) |
 | Transfert d'information | Sérialisation complète à chaque fois | Accès direct dans l'espace partagé |
-| Contrôle de la vie privée | Pas de mécanisme systématique | Autorisation du Host + audit complet |
+| Contrôle de la vie privée | Pas de mécanisme systématique | Autorisation du Human Prime + audit complet |
 | Scénarios applicables | Orchestration de services faiblement couplés | Collaboration approfondie et fusion cognitive |
 
 Shared Context fait passer la collaboration entre Fays de « relayer des messages » à « penser ensemble » — c'est la valeur centrale de TP en tant que protocole de partage cognitif.

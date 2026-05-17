@@ -44,7 +44,7 @@ La Phase 1 se concentre sur la spécification technique centrale de TP. Les jalo
 
 #### Phase 2 : Sécurité, vie privée et Shared Context
 
-La Phase 2 approfondit le domaine de la sécurité et de la vie privée. Les jalons clés incluent : livraison des définitions Schema liées au chiffrement et aux credentials (EncryptedPayload, CallbackCredential) ; publication de la spécification de sécurité couvrant le chiffrement de bout en bout, les mécanismes d'authentification et l'autorisation déléguée par le Host ; définition de la gestion complète du cycle de vie du Shared Context — création, définition de portée, expiration et révocation ; établissement du mécanisme de gouvernance du Technical Steering Committee (TSC). Les critères de sortie de la Phase 2 sont que le Schema de sécurité passe la validation de cohérence et que la charte du TSC est officiellement publiée.
+La Phase 2 approfondit le domaine de la sécurité et de la vie privée. Les jalons clés incluent : livraison des définitions Schema liées au chiffrement et aux credentials (EncryptedPayload, CallbackCredential) ; publication de la spécification de sécurité couvrant le chiffrement de bout en bout, les mécanismes d'authentification et l'autorisation déléguée par le Human Prime ; définition de la gestion complète du cycle de vie du Shared Context — création, définition de portée, expiration et révocation ; établissement du mécanisme de gouvernance du Technical Steering Committee (TSC). Les critères de sortie de la Phase 2 sont que le Schema de sécurité passe la validation de cohérence et que la charte du TSC est officiellement publiée.
 
 #### Phase 3 : Ponts de transport et SDK
 

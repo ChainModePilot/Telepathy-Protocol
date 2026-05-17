@@ -44,7 +44,7 @@ La Fase 1 se enfoca en la especificación técnica central de TP. Los hitos clav
 
 #### Fase 2: Seguridad, privacidad y Shared Context
 
-La Fase 2 profundiza en el dominio de seguridad y privacidad. Los hitos clave incluyen: entrega de definiciones Schema relacionadas con cifrado y credentials (EncryptedPayload, CallbackCredential); publicación de la especificación de seguridad cubriendo cifrado de extremo a extremo, mecanismos de autenticación y autorización delegada por el Host; definición de la gestión completa del ciclo de vida del Shared Context — creación, definición de alcance, expiración y revocación; establecimiento del mecanismo de gobernanza del Technical Steering Committee (TSC). Los criterios de salida de la Fase 2 son que el Schema de seguridad pase la validación de consistencia y que la carta del TSC sea publicada oficialmente.
+La Fase 2 profundiza en el dominio de seguridad y privacidad. Los hitos clave incluyen: entrega de definiciones Schema relacionadas con cifrado y credentials (EncryptedPayload, CallbackCredential); publicación de la especificación de seguridad cubriendo cifrado de extremo a extremo, mecanismos de autenticación y autorización delegada por el Human Prime; definición de la gestión completa del ciclo de vida del Shared Context — creación, definición de alcance, expiración y revocación; establecimiento del mecanismo de gobernanza del Technical Steering Committee (TSC). Los criterios de salida de la Fase 2 son que el Schema de seguridad pase la validación de consistencia y que la carta del TSC sea publicada oficialmente.
 
 #### Fase 3: Puentes de transporte y SDK
 

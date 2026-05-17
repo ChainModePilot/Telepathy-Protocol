@@ -57,7 +57,7 @@ Pero si ambas partes poseyeran "telepatía", la situación sería completamente 
 
 Entre humanos, la "telepatía" es un concepto de ciencia ficción. Pero en escenarios Fay-a-Fay, este contexto compartido es **técnicamente realizable**.
 
-El estado cognitivo de un Fay es fundamentalmente datos estructurados — la memoria es un grafo de conocimiento indexable, las vistas son árboles de estado serializables, y las reglas de razonamiento son motores lógicos compartibles. Cuando dos Fays establecen una sesión TP, pueden, dentro del alcance de la autorización del Host, incorporar porciones de sus recursos cognitivos en un espacio compartido:
+El estado cognitivo de un Fay es fundamentalmente datos estructurados — la memoria es un grafo de conocimiento indexable, las vistas son árboles de estado serializables, y las reglas de razonamiento son motores lógicos compartibles. Cuando dos Fays establecen una sesión TP, pueden, dentro del alcance de la autorización del Human Prime, incorporar porciones de sus recursos cognitivos en un espacio compartido:
 
 - **Memoria a largo plazo parcial a nivel de sesión**: Fragmentos de conocimiento relevantes para el tema de colaboración actual
 - **Estado de interfaz de vista**: Estado en tiempo real de la interfaz o vistas de datos que ambas partes están operando

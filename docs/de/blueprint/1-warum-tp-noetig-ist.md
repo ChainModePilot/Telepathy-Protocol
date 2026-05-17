@@ -67,22 +67,22 @@ In MCPs Welt ist ein Tool eine zustandslose Funktion — es spielt keine Rolle, 
 
 Diese Annahme ist in technischen Dienstszenarien vernünftig. Aber wenn AI Agents beginnen, im Namen realer Menschen zu handeln, gilt diese Annahme nicht mehr.
 
-#### Die iFay-Weltanschauung: Jeder Fay hat einen Host
+#### Die iFay-Weltanschauung: Jeder Fay hat einen Human Prime
 
-Im iFay-System ist die Weltanschauung grundlegend anders. Jeder Fay — ob ein iFay, der eine Einzelperson vertritt, oder ein coFay, der eine öffentliche soziale Funktion erfüllt — hat einen klar definierten **Host**. Ein Fay handelt im Namen seines Hosts, schützt die Interessen des Hosts und wahrt die Privatsphäre des Hosts.
+Im iFay-System ist die Weltanschauung grundlegend anders. Jeder Fay — ob ein iFay, der eine Einzelperson vertritt, oder ein coFay, der eine öffentliche soziale Funktion erfüllt — hat einen klar definierten **Human Prime**. Ein Fay handelt im Namen seines Human Prime, schützt die Interessen des Human Prime und wahrt die Privatsphäre des Human Prime.
 
-Das bedeutet, dass wenn zwei Fays kommunizieren, grundlegend kein Datenaustausch zwischen zwei Softwarediensten stattfindet, sondern vielmehr **eine Verhandlung zwischen zwei Delegierten, die im Namen ihrer jeweiligen Hosts handeln** — ähnlich wie Anwälte im Namen ihrer Mandanten verhandeln oder Sekretäre Angelegenheiten im Namen ihrer Vorgesetzten koordinieren.
+Das bedeutet, dass wenn zwei Fays kommunizieren, grundlegend kein Datenaustausch zwischen zwei Softwarediensten stattfindet, sondern vielmehr **eine Verhandlung zwischen zwei Delegierten, die im Namen ihrer jeweiligen Human Primes handeln** — ähnlich wie Anwälte im Namen ihrer Mandanten verhandeln oder Sekretäre Angelegenheiten im Namen ihrer Vorgesetzten koordinieren.
 
 ```mermaid
 graph LR
-    subgraph "Domäne von Host A"
-        HA["Host A (Natürliche Person)"]
+    subgraph "Domäne von Human Prime A"
+        HA["Human Prime A (Natürliche Person)"]
         FA["iFay A"]
         HA -.->|"Autorisierung & Delegation"| FA
     end
 
-    subgraph "Domäne von Host B"
-        HB["Host B (Natürliche Person)"]
+    subgraph "Domäne von Human Prime B"
+        HB["Human Prime B (Natürliche Person)"]
         FB["iFay B"]
         HB -.->|"Autorisierung & Delegation"| FB
     end
@@ -98,9 +98,9 @@ graph LR
 Dieses „Delegiertenverhandlungs"-Paradigma stellt völlig neue Anforderungen an Kommunikationsprotokolle:
 
 - **Identitätszuordnung**: Das Protokoll muss klar identifizieren, wen jede kommunizierende Entität vertritt. Wenn beispielsweise ein Fay im Namen eines Patienten einen Termin bei einem Krankenhaus-coFay bucht, muss der Krankenhaus-coFay bestätigen können, dass „dieser Fay tatsächlich vom Patienten autorisiert ist, den Termin zu vereinbaren", anstatt dass jeder den Fay des Patienten imitieren kann.
-- **Vertrauensgrenzen**: Der Informationsaustausch zwischen Delegierten muss innerhalb des von ihren Hosts autorisierten Rahmens erfolgen. Beispielsweise autorisiert ein Patient seinen Fay, Allergiehistorie und aktuelle Symptome mit dem Krankenhaus zu teilen, erlaubt aber nicht das Teilen von psychologischen Beratungsaufzeichnungen — der Fay muss diese Grenze strikt einhalten.
-- **Datenschutz**: Sensible Daten der Hosts müssen während der Übertragung verschlüsselt sein, mit Unterstützung für selektive Offenlegung. Beispielsweise müssen bei einem Versicherungsanspruch nur der Diagnosecode und die Kostenaufschlüsselung offengelegt werden, ohne die vollständigen Krankenakten preiszugeben.
-- **Auditierbarkeit**: Alle Delegiertenaktionen müssen nachverfolgbar sein, damit Hosts sie im Nachhinein überprüfen können. Beispielsweise kann ein Host überprüfen „mit welchen Fays mein Fay in der letzten Woche Daten geteilt hat und welche Daten geteilt wurden" — ähnlich wie die Überprüfung der Transaktionshistorie eines Bankkontos.
+- **Vertrauensgrenzen**: Der Informationsaustausch zwischen Delegierten muss innerhalb des von ihren Human Primes autorisierten Rahmens erfolgen. Beispielsweise autorisiert ein Patient seinen Fay, Allergiehistorie und aktuelle Symptome mit dem Krankenhaus zu teilen, erlaubt aber nicht das Teilen von psychologischen Beratungsaufzeichnungen — der Fay muss diese Grenze strikt einhalten.
+- **Datenschutz**: Sensible Daten der Human Primes müssen während der Übertragung verschlüsselt sein, mit Unterstützung für selektive Offenlegung. Beispielsweise müssen bei einem Versicherungsanspruch nur der Diagnosecode und die Kostenaufschlüsselung offengelegt werden, ohne die vollständigen Krankenakten preiszugeben.
+- **Auditierbarkeit**: Alle Delegiertenaktionen müssen nachverfolgbar sein, damit Human Primes sie im Nachhinein überprüfen können. Beispielsweise kann ein Human Prime überprüfen „mit welchen Fays mein Fay in der letzten Woche Daten geteilt hat und welche Daten geteilt wurden" — ähnlich wie die Überprüfung der Transaktionshistorie eines Bankkontos.
 
 ### 1.3 Blinde Flecken bestehender Protokolle
 
@@ -114,7 +114,7 @@ Weder MCP noch A2A befasst sich damit, wen ein Agent vertritt. Tools in MCP habe
 
 #### Kein Datenschutz
 
-Bestehende Protokolle verfügen über keine systematischen Schutzmechanismen für die Privatsphäre-Daten des Hosts. MCPs Tool-Aufrufe übertragen Parameter im Klartext; A2As Messages bieten ebenfalls keine Ende-zu-Ende-Verschlüsselung oder selektive Offenlegungsfähigkeiten. Wenn Agents im Namen ihrer Hosts Gesundheitsdaten, Finanzdaten oder Identitätsnachweise übertragen müssen, können bestehende Protokolle keine ausreichenden Sicherheitsgarantien bieten.
+Bestehende Protokolle verfügen über keine systematischen Schutzmechanismen für die Privatsphäre-Daten des Human Prime. MCPs Tool-Aufrufe übertragen Parameter im Klartext; A2As Messages bieten ebenfalls keine Ende-zu-Ende-Verschlüsselung oder selektive Offenlegungsfähigkeiten. Wenn Agents im Namen ihrer Human Primes Gesundheitsdaten, Finanzdaten oder Identitätsnachweise übertragen müssen, können bestehende Protokolle keine ausreichenden Sicherheitsgarantien bieten.
 
 > **Praxisbeispiel**: Der Fay eines Arbeitssuchenden reicht einen Lebenslauf bei einem coFay eines Personalvermittlers ein. Der Arbeitssuchende möchte nur Berufserfahrung und Fähigkeiten offenlegen, aber nicht sein aktuelles Gehalt und seine Privatadresse preisgeben. Unter A2A ist die Wahl entweder alles zu senden (Datenschutzverletzung) oder nichts zu senden (Bewerbung kann nicht abgeschlossen werden). Es gibt keinen Mechanismus für „die Gegenseite nur das sehen lassen, was ich erlaube".
 

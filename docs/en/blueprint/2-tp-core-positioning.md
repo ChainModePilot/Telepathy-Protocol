@@ -57,7 +57,7 @@ But if both parties possessed "telepathy," the situation would be entirely diffe
 
 Among humans, "telepathy" is a science fiction concept. But in Fay-to-Fay scenarios, this shared context is **engineerable**.
 
-A Fay's cognitive state is fundamentally structured data — memory is an indexable knowledge graph, views are serializable state trees, and reasoning rules are shareable logic engines. When two Fays establish a TP session, they can, within the scope of Host authorization, incorporate portions of their cognitive resources into a shared space:
+A Fay's cognitive state is fundamentally structured data — memory is an indexable knowledge graph, views are serializable state trees, and reasoning rules are shareable logic engines. When two Fays establish a TP session, they can, within the scope of Human Prime authorization, incorporate portions of their cognitive resources into a shared space:
 
 - **Session-level partial long-term memory**: Knowledge fragments relevant to the current collaboration topic
 - **View interface state**: Real-time state of the interface or data views both parties are operating on

@@ -57,7 +57,7 @@ Mais si les deux parties possédaient la « télépathie », la situation serait
 
 Parmi les humains, la « télépathie » est un concept de science-fiction. Mais dans les scénarios Fay-à-Fay, ce contexte partagé est **réalisable techniquement**.
 
-L'état cognitif d'un Fay est fondamentalement constitué de données structurées — la mémoire est un graphe de connaissances indexable, les vues sont des arbres d'état sérialisables, et les règles de raisonnement sont des moteurs logiques partageables. Quand deux Fays établissent une session TP, ils peuvent, dans le cadre de l'autorisation du Host, incorporer des portions de leurs ressources cognitives dans un espace partagé :
+L'état cognitif d'un Fay est fondamentalement constitué de données structurées — la mémoire est un graphe de connaissances indexable, les vues sont des arbres d'état sérialisables, et les règles de raisonnement sont des moteurs logiques partageables. Quand deux Fays établissent une session TP, ils peuvent, dans le cadre de l'autorisation du Human Prime, incorporer des portions de leurs ressources cognitives dans un espace partagé :
 
 - **Mémoire à long terme partielle au niveau de la session** : Fragments de connaissances pertinents pour le sujet de collaboration en cours
 - **État de l'interface de vue** : État en temps réel de l'interface ou des vues de données que les deux parties manipulent

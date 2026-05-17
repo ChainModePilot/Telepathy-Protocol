@@ -99,9 +99,9 @@ Shareable cognitive resources include:
 | Rules or reasoning engines | Reasoning logic for the current task | Legal Fay sharing applicable legal provisions and reasoning chains — the tax Fay can directly reference these provisions to calculate tax implications, without the legal Fay having to copy and paste relevant statutes into messages each time |
 | Environmental context | Dynamic information such as time, location, device state | Fay on a drone sharing real-time GPS coordinates, battery level, and camera angle with the ground control Fay — the ground Fay can directly "perceive" the drone's state rather than waiting for periodic status report messages |
 
-#### Host Authorization and Auditing
+#### Human Prime Authorization and Auditing
 
-The scope of Shared Context is strictly determined by **Host authorization**. A Fay cannot unilaterally decide which cognitive resources to share — every sharing action must occur within the boundaries pre-authorized by the Host. Additionally, all access to the Shared Context is **auditable**, allowing the Host to review after the fact which information was shared, by whom it was accessed, and at what point in time.
+The scope of Shared Context is strictly determined by **Human Prime authorization**. A Fay cannot unilaterally decide which cognitive resources to share — every sharing action must occur within the boundaries pre-authorized by the Human Prime. Additionally, all access to the Shared Context is **auditable**, allowing the Human Prime to review after the fact which information was shared, by whom it was accessed, and at what point in time.
 
 This design forms a sharp contrast with A2A's Opaque Execution principle:
 
@@ -110,7 +110,7 @@ This design forms a sharp contrast with A2A's Opaque Execution principle:
 | Internal State | Not shared; Agent is a black box | Selectively shared within authorized scope |
 | Collaboration Depth | Task level (delegation and reporting) | Cognitive level (shared memory and reasoning) |
 | Information Transfer | Full serialization each time | Direct access within shared space |
-| Privacy Control | No systematic mechanism | Host authorization + full auditing |
+| Privacy Control | No systematic mechanism | Human Prime authorization + full auditing |
 | Applicable Scenarios | Loosely-coupled service orchestration | Deep collaboration and cognitive fusion |
 
 Shared Context upgrades collaboration between Fays from "relaying messages" to "thinking together" — this is the core value of TP as a cognitive sharing protocol.

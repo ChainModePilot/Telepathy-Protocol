@@ -44,7 +44,7 @@ Phase 1 konzentriert sich auf TPs technische Kernspezifikation. Wichtige Meilens
 
 #### Phase 2: Sicherheit, Datenschutz und Shared Context
 
-Phase 2 vertieft sich in den Bereich Sicherheit und Datenschutz. Wichtige Meilensteine umfassen: Lieferung von Verschlüsselungs- und Credential-bezogenen Schema-Definitionen (EncryptedPayload, CallbackCredential); Veröffentlichung der Sicherheitsspezifikation zu Ende-zu-Ende-Verschlüsselung, Authentifizierungsmechanismen und Host-delegierter Autorisierung; Definition des vollständigen Lebenszyklus-Managements von Shared Context — Erstellung, Umfangsdefinition, Ablauf und Widerruf; Etablierung des Technical Steering Committee (TSC) Governance-Mechanismus. Die Austrittskriterien für Phase 2 sind, dass das Sicherheits-Schema die Konsistenzvalidierung besteht und die TSC-Charta offiziell veröffentlicht wird.
+Phase 2 vertieft sich in den Bereich Sicherheit und Datenschutz. Wichtige Meilensteine umfassen: Lieferung von Verschlüsselungs- und Credential-bezogenen Schema-Definitionen (EncryptedPayload, CallbackCredential); Veröffentlichung der Sicherheitsspezifikation zu Ende-zu-Ende-Verschlüsselung, Authentifizierungsmechanismen und Human Prime-delegierter Autorisierung; Definition des vollständigen Lebenszyklus-Managements von Shared Context — Erstellung, Umfangsdefinition, Ablauf und Widerruf; Etablierung des Technical Steering Committee (TSC) Governance-Mechanismus. Die Austrittskriterien für Phase 2 sind, dass das Sicherheits-Schema die Konsistenzvalidierung besteht und die TSC-Charta offiziell veröffentlicht wird.
 
 #### Phase 3: Transport-Bridges und SDK
 

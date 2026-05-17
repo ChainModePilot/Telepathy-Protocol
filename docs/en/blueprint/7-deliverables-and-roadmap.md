@@ -44,7 +44,7 @@ Phase 1 focuses on TP's core technical specification. Key milestones include: pu
 
 #### Phase 2: Security, Privacy and Shared Context
 
-Phase 2 delves into the security and privacy domain. Key milestones include: delivering encryption and credential-related Schema definitions (EncryptedPayload, CallbackCredential); publishing the security specification covering end-to-end encryption, authentication mechanisms, and Host-delegated authorization; defining the complete lifecycle management of Shared Context — creation, scope definition, expiration, and revocation; establishing the Technical Steering Committee (TSC) governance mechanism. The exit criteria for Phase 2 are that the security Schema passes consistency validation and the TSC charter is officially published.
+Phase 2 delves into the security and privacy domain. Key milestones include: delivering encryption and credential-related Schema definitions (EncryptedPayload, CallbackCredential); publishing the security specification covering end-to-end encryption, authentication mechanisms, and Human Prime-delegated authorization; defining the complete lifecycle management of Shared Context — creation, scope definition, expiration, and revocation; establishing the Technical Steering Committee (TSC) governance mechanism. The exit criteria for Phase 2 are that the security Schema passes consistency validation and the TSC charter is officially published.
 
 #### Phase 3: Transport Bridges and SDK
 

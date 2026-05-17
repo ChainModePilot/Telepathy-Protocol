@@ -99,9 +99,9 @@ Los recursos cognitivos compartibles incluyen:
 | Reglas o motores de razonamiento | Lógica de razonamiento para la tarea actual | Un Fay legal comparte disposiciones legales aplicables y cadenas de razonamiento — el Fay fiscal puede referenciar directamente estas disposiciones para calcular implicaciones fiscales, sin que el Fay legal tenga que copiar y pegar estatutos relevantes en mensajes cada vez |
 | Contexto ambiental | Información dinámica como tiempo, ubicación, estado del dispositivo | Un Fay en un dron comparte coordenadas GPS en tiempo real, nivel de batería y ángulo de cámara con el Fay de control terrestre — el Fay terrestre puede "percibir" directamente el estado del dron en lugar de esperar mensajes periódicos de informe de estado |
 
-#### Autorización del Host y auditoría
+#### Autorización del Human Prime y auditoría
 
-El alcance del Shared Context está estrictamente determinado por la **autorización del Host**. Un Fay no puede decidir unilateralmente qué recursos cognitivos compartir — cada acción de compartición debe ocurrir dentro de los límites preautorizados por el Host. Además, todo acceso al Shared Context es **auditable**, permitiendo al Host revisar después del hecho qué información se compartió, por quién fue accedida y en qué momento.
+El alcance del Shared Context está estrictamente determinado por la **autorización del Human Prime**. Un Fay no puede decidir unilateralmente qué recursos cognitivos compartir — cada acción de compartición debe ocurrir dentro de los límites preautorizados por el Human Prime. Además, todo acceso al Shared Context es **auditable**, permitiendo al Human Prime revisar después del hecho qué información se compartió, por quién fue accedida y en qué momento.
 
 Este diseño forma un contraste marcado con el principio de Opaque Execution de A2A:
 
@@ -110,7 +110,7 @@ Este diseño forma un contraste marcado con el principio de Opaque Execution de 
 | Estado interno | No compartido; el Agent es una caja negra | Compartido selectivamente dentro del alcance autorizado |
 | Profundidad de colaboración | Nivel de tarea (delegación e informes) | Nivel cognitivo (memoria y razonamiento compartidos) |
 | Transferencia de información | Serialización completa cada vez | Acceso directo en el espacio compartido |
-| Control de privacidad | Sin mecanismo sistemático | Autorización del Host + auditoría completa |
+| Control de privacidad | Sin mecanismo sistemático | Autorización del Human Prime + auditoría completa |
 | Escenarios aplicables | Orquestación de servicios débilmente acoplados | Colaboración profunda y fusión cognitiva |
 
 Shared Context eleva la colaboración entre Fays de "pasar mensajes" a "pensar juntos" — este es el valor central de TP como protocolo de compartición cognitiva.

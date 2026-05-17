@@ -4,21 +4,21 @@ The following five scenarios demonstrate TP's practical applications across diff
 
 ### 4.1 Privacy-Delegated Consultation
 
-**Scenario**: A patient Host needs their medical Fay to submit health data to an insurance coFay to obtain a claims assessment.
+**Scenario**: A patient Human Prime needs their medical Fay to submit health data to an insurance coFay to obtain a claims assessment.
 
 Under traditional Agent communication models, the medical Agent would need to serialize the patient's complete health records into a message and send it to the insurance Agent — meaning all data is transmitted in plaintext over the network, and the receiver gains access to information far beyond what is necessary.
 
 Under TP's cognitive sharing model, the process is fundamentally different:
 
-1. **Host Authorization**: The patient Host authorizes the medical Fay through the FP protocol, explicitly specifying that only diagnosis information relevant to this claim may be disclosed (such as diagnosis codes, treatment dates, cost breakdowns), while other health records (such as psychological counseling records, genetic test results) remain encrypted and invisible
+1. **Human Prime Authorization**: The patient Human Prime authorizes the medical Fay through the FP protocol, explicitly specifying that only diagnosis information relevant to this claim may be disclosed (such as diagnosis codes, treatment dates, cost breakdowns), while other health records (such as psychological counseling records, genetic test results) remain encrypted and invisible
 2. **Selective Disclosure**: The medical Fay uses TP's `SelectiveDisclosure` mechanism to transmit authorized data in encrypted form to the insurance coFay, along with a time-limited `CallbackCredential`
 3. **Controlled Access**: The insurance coFay accesses authorized data within a limited scope through the callback credential, completing the claims assessment
 4. **Automatic Expiration**: After the assessment is complete, the callback credential automatically expires, and the insurance coFay can no longer access any patient data
-5. **Full Auditing**: All data access records are logged in the audit trail, and the patient Host can review them at any time
+5. **Full Auditing**: All data access records are logged in the audit trail, and the patient Human Prime can review them at any time
 
 ```mermaid
 sequenceDiagram
-    participant H as Patient Host
+    participant H as Patient Human Prime
     participant MF as Medical Fay
     participant IF as Insurance coFay
 
@@ -29,10 +29,10 @@ sequenceDiagram
     IF->>IF: Complete claims assessment
     IF->>MF: Return assessment result
     Note over IF: Credential auto-expires, data access terminated
-    Note over H: Host can audit all access records
+    Note over H: Human Prime can audit all access records
 ```
 
-This scenario embodies TP's **Host-sovereign privacy** principle — the scope of data disclosure is always determined by the Host, not by the Fay's own judgment.
+This scenario embodies TP's **Human Prime-sovereign privacy** principle — the scope of data disclosure is always determined by the Human Prime, not by the Fay's own judgment.
 
 
 ### 4.2 Cross-Protocol Translation
@@ -68,22 +68,22 @@ The key value of this scenario is: **protocol differences are completely transpa
 
 ### 4.3 Credential-Passing Consultation
 
-**Scenario**: A legal Fay (representing a client Host) initiates a consultation with a tax coFay, needing to obtain the client's tax records to support litigation preparation.
+**Scenario**: A legal Fay (representing a client Human Prime) initiates a consultation with a tax coFay, needing to obtain the client's tax records to support litigation preparation.
 
 This scenario is analogous to a real-world situation where a lawyer requests materials from a tax authority on behalf of a client — the lawyer needs to present the client's power of attorney, the tax authority provides materials within a limited scope after verifying the authorization, and the entire process is documented.
 
 TP's consultation mode (Consultation) and callback credential mechanism (CallbackCredential) precisely map this real-world process:
 
-1. **Host Delegation**: The client Host authorizes the legal Fay through the FP protocol, permitting it to obtain tax records on their behalf
+1. **Human Prime Delegation**: The client Human Prime authorizes the legal Fay through the FP protocol, permitting it to obtain tax records on their behalf
 2. **Consultation Initiation**: The legal Fay sends a `ConsultationRequest` to the tax coFay, accompanied by a time-limited `CallbackCredential` that authorizes the tax coFay to access the client's financial data within a limited scope
 3. **Credential Verification**: The tax coFay verifies the callback credential's validity — checking the issuer's identity, authorization scope, and validity period
 4. **Controlled Data Retrieval**: The tax coFay accesses the client's tax records through the credential, but only within the years and tax types specified in the credential's `scope`
 5. **End-to-End Encryption**: The entire data transmission process uses TP's `EncryptedPayload` mechanism for end-to-end encryption
-6. **Audit Trail**: All credential usage and data access records are written to the audit log, and the client Host can review them at any time
+6. **Audit Trail**: All credential usage and data access records are written to the audit log, and the client Human Prime can review them at any time
 
 ```mermaid
 sequenceDiagram
-    participant C as Client Host
+    participant C as Client Human Prime
     participant LF as Legal Fay
     participant TF as Tax coFay
 
@@ -96,7 +96,7 @@ sequenceDiagram
     Note over C: Full audit trail traceable
 ```
 
-This scenario demonstrates how TP digitizes the real-world pattern of "a delegate conducting business with a power of attorney" — credentials are time-limited, scoped, revocable, and auditable, fully protecting the Host's interests.
+This scenario demonstrates how TP digitizes the real-world pattern of "a delegate conducting business with a power of attorney" — credentials are time-limited, scoped, revocable, and auditable, fully protecting the Human Prime's interests.
 
 
 ### 4.4 Multi-Fay Collaborative Task
